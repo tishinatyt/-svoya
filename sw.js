@@ -1,16 +1,1 @@
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
-self.addEventListener('push', event => {
-  let data = { title: 'СВОЯ', body: 'Нове оновлення клубу.' };
-  try { data = {...data, ...(event.data ? event.data.json() : {})}; } catch (_) {}
-  event.waitUntil(self.registration.showNotification(data.title, {
-    body: data.body,
-    icon: data.icon || undefined,
-    data: data.url ? {url:data.url} : undefined
-  }));
-});
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  const url = event.notification.data?.url || '/';
-  event.waitUntil(clients.openWindow(url));
-});
+const CACHE='svoya-v1';const ASSETS=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./favicon.svg'];self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting()});self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('./index.html'))))});self.addEventListener('push',e=>{let d={title:'СВОЯ',body:'Нове оновлення клубу.'};try{d={...d,...e.data.json()}}catch{}e.waitUntil(self.registration.showNotification(d.title,{body:d.body,data:{url:d.url||'./'}}))});self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(clients.openWindow(e.notification.data?.url||'./'))});
