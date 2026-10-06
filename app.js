@@ -106,3 +106,10 @@ const observer = new IntersectionObserver((entries) => {
 }, {threshold: .12});
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
