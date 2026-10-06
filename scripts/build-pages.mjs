@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 const base = `/${(process.env.VITE_BASE_PATH || '/-svoya/').replace(/^\/+|\/+$/g, '')}/`
 const html = await readFile('dist/index.html', 'utf8')
 await mkdir('dist/club', { recursive: true })
-await writeFile('dist/club/index.html', html.replace('СВОЯ — знайди своє коло', 'СВОЯ — клуб поруч').replace('href="https://tishinatyt.github.io/-svoya/"', `href="https://tishinatyt.github.io${base}club/"`))
+await writeFile('dist/club/index.html', html.replace('СВОЯ — жіночий клуб у Чернігові', 'СВОЯ — платформа жіночого клубу').replace('href="https://tishinatyt.github.io/-svoya/"', `href="https://tishinatyt.github.io${base}club/"`))
 const manifest = JSON.parse(await readFile('public/manifest.webmanifest', 'utf8'))
 manifest.id = `${base}club/`
 manifest.start_url = `${base}club/`

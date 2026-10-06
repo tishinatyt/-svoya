@@ -31,3 +31,12 @@
 
 /* Compact, locally hosted stock covers for every catalogue entry. */
 .sv-card-art img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}.sv-detail-stock{height:180px;position:relative;border-radius:10px;overflow:hidden;margin:8px 0 0;background:#eee4e8}.sv-detail-stock>img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}.sv-detail-stock>div{position:absolute;inset:auto 0 0;padding:28px 15px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(transparent,#25101dc9);color:#fff}.sv-detail-stock>div>span{font:23px Georgia,serif}.sv-detail-stock b{font-size:12px;font-weight:400}.sv-stock-caption{font-size:12px;color:#917382;margin:5px 0 14px}@media(max-width:620px){.sv-detail-stock{height:155px}.sv-detail-stock>div>span{font-size:21px}}
+
+/* Keep the club identity and city control readable on small screens. */
+@media (max-width: 550px) {
+  .sv-topbar { flex-wrap: wrap; height: auto; min-height: 82px; padding-top: 10px; padding-bottom: 10px; }
+  .sv-topbar .sv-location { order: 4; flex-basis: 100%; font-size: 13px; }
+  .sv-topbar .sv-location .sv-select { min-height: 28px; height: 28px !important; }
+  .sv-page-heading { display: block; }
+  .sv-page-heading > .sv-btn { margin-top: 17px; }
+}

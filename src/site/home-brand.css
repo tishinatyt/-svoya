@@ -1,0 +1,46 @@
+/* An editorial first screen, with the club's purpose stated before the slogan. */
+.home-hero .home-kicker {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 6px;
+  color: #67243d;
+}
+.home-hero .home-kicker strong {
+  font: 600 15px/1.4 Arial, Helvetica, sans-serif;
+  letter-spacing: .055em;
+}
+.home-hero .home-kicker > span {
+  font-size: 12px;
+  letter-spacing: .02em;
+  text-transform: none;
+  color: #795a68;
+}
+.home-hero h1 { margin-right: -20px; font-size: clamp(58px, 5.8vw, 98px); }
+.home-hero-photo { border-radius: 4px; }
+.home-hero-bottom { align-items: flex-start; flex-direction: column; gap: 24px; }
+.home-hero-bottom > p { max-width: 395px; color: #684b58; font-size: 17px; margin: 0; }
+.home-hero-bottom > div { align-items: flex-start; }
+.home-small-note { color: #765662; font-size: 13px; }
+.home-button { border-radius: 7px; }
+.home-ribbon { gap: 18px; font-size: 14px; padding-top: 17px; padding-bottom: 17px; }
+.home-ribbon > span + span { padding-left: 30px; border-left: 1px solid #ffffff40; }
+@media (max-width: 1100px) {
+  .home-hero h1 { font-size: clamp(50px, 5.8vw, 69px); margin-right: 0; }
+}
+@media (max-width: 700px) {
+  .home-header { padding: 18px 20px; gap: 12px; }
+  .home-header > .home-button { font-size: 13px; padding: 10px 13px; }
+  .home-hero .home-kicker { flex-direction: column; gap: 6px; }
+  .home-hero .home-kicker strong { font-size: 14px; letter-spacing: .035em; }
+  .home-hero .home-kicker > span { font-size: 12px; }
+  .home-hero h1 { font-size: clamp(46px, 10.8vw, 73px); line-height: 1.1; margin-top: 25px; }
+  .home-hero-bottom { align-items: flex-start; flex-direction: column; gap: 21px; }
+  .home-hero-bottom > p { font-size: 16px; max-width: 36ch; }
+  .home-hero-bottom .home-button { font-size: 15px; min-height: 49px; }
+  .home-small-note { font-size: 13px; }
+  .home-hero-photo { border-radius: 4px; }
+  .home-ribbon { justify-content: flex-start; gap: 10px; padding: 18px 23px; }
+  .home-ribbon > span { display: block !important; width: 100%; }
+  .home-ribbon > span + span { border: 0; padding-left: 0; }
+}

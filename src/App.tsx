@@ -5,7 +5,7 @@ import Home from './site/page'
 const Club = lazy(() => import('./site/club/club'))
 
 function ClubPage() {
-  useEffect(() => { document.title = 'СВОЯ — клуб поруч' }, [])
+  useEffect(() => { document.title = 'СВОЯ — платформа жіночого клубу' }, [])
   return <Suspense fallback={<p role="status" style={{ padding: 32 }}>Завантажуємо клуб…</p>}><Club /></Suspense>
 }
 
