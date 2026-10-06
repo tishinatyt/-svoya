@@ -1,14 +1,18 @@
-name: SVOYA CI
+name: Deploy SVOYA
 
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: svoya-pages
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -29,13 +33,25 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_BASE_PATH: /startai/svoya/
+          VITE_BASE_PATH: /-svoya/
 
-      - name: Upload deployable dist
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: svoya-pages-dist
           path: dist
-          if-no-files-found: error
-          retention-days: 7
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
