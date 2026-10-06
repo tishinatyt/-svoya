@@ -13,6 +13,8 @@ import MyEvents from '@/pages/MyEvents'
 import PublicProfile from '@/pages/PublicProfile'
 import SvoyaLanding from '@/pages/SvoyaLanding'
 import SvoyaClub from '@/pages/SvoyaClub'
+import SvoyaCreateEntry from '@/pages/SvoyaCreateEntry'
+import SvoyaEntryDetail from '@/pages/SvoyaEntryDetail'
 import { UnreadMessagesProvider } from '@/contexts/UnreadMessagesContext'
 import { ProfilePreviewProvider } from '@/contexts/ProfilePreviewContext'
 import { MyEventsProvider } from '@/contexts/MyEventsContext'
@@ -32,7 +34,7 @@ function RouteAnalytics() {
 
 function MemberRoutes() {
   const { pathname } = useLocation()
-  const isClub = pathname === '/club'
+  const isClub = pathname.startsWith('/club')
   const isCreateEvent = pathname === '/create'
   const hideBottomNav = isClub || isCreateEvent || FULLSCREEN_PATTERNS.some((re) => re.test(pathname))
   const showLegacyDesktopShell = !isClub
@@ -43,6 +45,8 @@ function MemberRoutes() {
       <main className={showLegacyDesktopShell ? 'lg:pl-56 xl:pl-60' : ''}>
         <Routes>
           <Route path="/club" element={<SvoyaClub />} />
+          <Route path="/club/create" element={<SvoyaCreateEntry />} />
+          <Route path="/club/entry/:id" element={<SvoyaEntryDetail />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/:userId" element={<PublicProfile />} />
           <Route path="/chats" element={<Chats />} />
