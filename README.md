@@ -1,86 +1,70 @@
-# Poruch
+# СВОЯ — жіночий клуб
 
-Poruch is a mobile-first social events PWA for finding real-world activities, joining them, coordinating in an event chat, and meeting offline.
+Канонічний вихідний код проєкту **СВОЯ**.
 
-## Project context
+Цей репозиторій є джерелом істини для подальшої розробки. ChatGPT Site і скриншоти використовуються лише як референс для відновлення зовнішнього вигляду; застосунок живе тут як звичайний React/TypeScript/Supabase-проєкт.
 
-See [docs/POROOCH_CONTEXT.md](docs/POROOCH_CONTEXT.md) for the current product semantics, architecture, Supabase/RLS model, deployment constraints, and regression checklist.
+## Архітектура
 
-## MVP features
+- `/` — публічна стартова сторінка-прев'ю.
+- `/club?section=feed` — стрічка клубу.
+- `/club?section=event` — події.
+- `/club?section=circle` — свої кола.
+- `/club?section=beauty` — б'юті.
+- `/club?section=business` — бізнес.
+- `/club?section=help` — допомога.
+- `/create` — створення зустрічі / події.
+- `/event/:id` — картка події.
+- `/event/:id/chat` — чат події.
+- `/my-events` — мої зустрічі та заявки.
+- `/chats` — чати.
+- `/profile` — профіль учасниці.
 
-- Google authentication and short profile onboarding
-- Public and personal event discovery
-- Event creation with date, capacity, location, map, and join mode
-- Open joining and organizer-approved participation requests
-- Participant leave/rejoin lifecycle with database-enforced capacity
-- Event-scoped realtime chat for organizers and joined participants
-- Profiles with avatar, city, bio, age, and interests
-- Responsive desktop shell and mobile navigation
+## Технічна база
 
-## Stack
+- React 19 + TypeScript
+- Vite 6 + Tailwind CSS 4
+- Supabase Auth / Postgres / RLS / Storage / Realtime
+- Leaflet / OpenStreetMap
+- PWA / service worker
 
-- React 19 and TypeScript
-- Vite 6 and Tailwind CSS 4
-- Supabase Auth, Postgres, RLS, Storage, and Realtime
-- Leaflet and OpenStreetMap
-- `vite-plugin-pwa` with generated service worker
+Функціональна база відновлена з перевіреної робочої версії PORUCH, а інтерфейс СВОЯ — з оригінального ChatGPT Site та підтверджених скриншотів.
 
-## Local setup
+## Зафіксовані екрани
 
-Requirements: Node.js 22 or a compatible current Node.js release, npm, and access to the intended Supabase project.
+У вихідниках відтворені:
+- стартова СВОЯ;
+- основна платформа / стрічка;
+- Події;
+- Свої кола;
+- Б'юті;
+- Бізнес;
+- Допомога.
+
+Деталі відновлення та правило «нічого не вигадувати» — у [docs/SVOYA_RECOVERY.md](docs/SVOYA_RECOVERY.md).
+
+## Локальний запуск
 
 ```bash
 cp .env.example .env
-npm install
+npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173/`.
-
-The frontend requires:
-
-```dotenv
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-publishable-key
-VITE_APP_URL=http://localhost:5173/
-```
-
-Only the public/publishable Supabase key belongs in frontend environment files. Never commit a database password, service-role key, personal access token, or OAuth client secret.
-
-## Commands
+Для production-збірки:
 
 ```bash
-npm run dev
 npm run build
-npm run preview
 ```
 
-The production build is written to `dist/`.
-
-## Supabase migrations
-
-Migrations live in `supabase/migrations/`. The hosted project treats migrations 001–005 as the reconciled historical baseline; 006–010 contain the current event, approval, chat, profile, storage, and policy changes.
-
-Always link and inspect the intended project before applying migrations:
+Базовий шлях для деплою можна задати через `VITE_BASE_PATH`, наприклад:
 
 ```bash
-npx supabase@latest link --project-ref <project-ref>
-npx supabase@latest migration list --linked
-npx supabase@latest db push --linked --dry-run
-npx supabase@latest db push --linked
+VITE_BASE_PATH=/startai/svoya/ npm run build
 ```
 
-Do not run the historical seed migrations against production or reset a hosted database. Migration 002 and migrations 004–005 contain legacy sample data.
+## Supabase
 
-## Deployment
+Міграції зберігаються у `supabase/migrations/`. Не запускати історичні seed-міграції проти production без перевірки.
 
-Production builds use the GitHub Pages project base `/porooch/`; local development uses `/`. The router, PWA scope/start URL, asset URLs, and GitHub Pages fallback in `public/404.html` follow that base.
-
-Configure Supabase Auth redirect allow-list entries for both `http://localhost:5173/` and the deployed `https://<owner>.github.io/porooch/` URL. The app derives its OAuth return URL from Vite's configured base.
-
-## Current limitations
-
-- Event invitations, notifications, unread counters, and direct messages are not part of the MVP.
-- Location search uses OpenStreetMap/Nominatim and depends on network availability.
-- Organizer request management is available on Event Detail; there is no separate moderation dashboard.
-- Historical activity/match database tables remain for compatibility but are not used by the Poruch UI.
+Публічний anon/publishable key може використовуватись фронтендом. Service-role key, DB password та інші секрети в репозиторій не додавати.
