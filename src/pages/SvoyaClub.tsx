@@ -1,18 +1,9 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/lib/supabase'
-import {
-  createClubPost,
-  createClubPostComment,
-  listClubPostComments,
-  listClubPosts,
-  type ClubPost,
-  type ClubPostComment,
-  type ClubPostSection,
-} from '@/lib/clubPosts'
+import { listSvoyaEntries, type SvoyaEntry, type SvoyaKind } from '@/lib/svoya'
 
-type SectionKey = 'feed' | 'event' | 'circle' | 'beauty' | 'business' | 'help'
+type SectionKey = SvoyaKind | 'feed'
 
 type SectionDefinition = {
   key: SectionKey
@@ -24,18 +15,6 @@ type SectionDefinition = {
   groupTitle: string
   filters: string[]
   primaryAction: string
-}
-
-type ClubEvent = {
-  id: string
-  title: string
-  description: string
-  category: string
-  address_text: string
-  event_datetime: string
-  cover_photo_url: string | null
-  created_at: string
-  organizer: { id: string; name: string | null; avatar_url: string | null } | null
 }
 
 const sections: SectionDefinition[] = [
@@ -138,24 +117,42 @@ const emptyStates: Record<'beauty' | 'business' | 'help', { icon: string; title:
   },
 }
 
-const sectionLabels: Record<ClubPostSection, string> = {
-  circle: 'Свої кола',
-  beauty: 'Б’юті',
-  business: 'Бізнес',
-  help: 'Допомога',
-}
+function PublishedEntryCard({ entry }: { entry: SvoyaEntry }) {
+  const imageByTitle: Record<string, string> = {
+    'Кава у своєму колі': 'images/landing/poruch-coffee.jpg',
+    'Прогулянка без поспіху': 'images/landing/poruch-walk.jpg',
+    'Творчий вечір разом': 'images/landing/poruch-friends.jpg',
+    'Жінки, які створюють': 'images/landing/poruch-friends-city.jpg',
+    'Я новенька у місті': 'images/landing/poruch-walk.jpg',
+    'Книжкові подруги': 'images/landing/poruch-friends.jpg',
+  }
+  const fallback = entry.kind === 'circle' ? 'images/landing/poruch-friends-city.jpg' : 'images/landing/poruch-friends.jpg'
+  const image = imageByTitle[entry.title] || fallback
 
-function normalizeRelation<T>(value: T | T[] | null | undefined): T | null {
-  return Array.isArray(value) ? (value[0] ?? null) : (value ?? null)
-}
-
-function formatDate(value: string) {
-  return new Date(value).toLocaleString('uk-UA', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  return (
+    <Link to={`/club/entry/${entry.id}`} className="rounded-[11px] border border-[#e1d5d0] bg-[#fcfbf9] p-3 transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(77,38,52,0.08)]">
+      <div className="flex gap-3">
+        <div className="relative h-[86px] w-[106px] shrink-0 overflow-hidden rounded-[8px]">
+          <img src={`${import.meta.env.BASE_URL}${image}`} alt="" className="h-full w-full object-cover" />
+          <span className={`absolute left-2 top-2 rounded px-2 py-1 text-[8px] ${entry.is_demo ? 'bg-[#f8eee8] text-[#8a615a]' : 'bg-[#8d2f51] text-white'}`}>
+            {entry.is_demo ? 'Приклад' : 'Нове'}
+          </span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2 text-[8px] text-[#97898e]">
+            <span>⌾ {entry.city}</span>
+            <span>{entry.is_demo ? 'Для натхнення' : entry.category}</span>
+          </div>
+          <h4 className="mt-2 text-[15px] font-extrabold leading-4 text-[#403438]">{entry.title}</h4>
+          <p className="mt-2 line-clamp-2 text-[10px] leading-4 text-[#746a6d]">{entry.description}</p>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center justify-between border-t border-[#eee5e1] pt-3 text-[9px]">
+        <span className="text-[#8d6876]">{entry.kind === 'circle' ? '♧' : entry.kind === 'event' ? '▦' : '◦'} &nbsp; {entry.category || 'СВОЯ'}</span>
+        <span className="rounded-full border border-[#decad1] px-3 py-1.5 text-[#8d2f51]">Деталі</span>
+      </div>
+    </Link>
+  )
 }
 
 function ExampleCard({ item }: { item: readonly [string, string, string, string] }) {
@@ -181,7 +178,7 @@ function ExampleCard({ item }: { item: readonly [string, string, string, string]
 
       <div className="mt-3 flex items-center justify-between border-t border-[#eee5e1] pt-3 text-[9px]">
         <span className="text-[#8d6876]">{action.includes('коло') ? '♧' : '▦'} &nbsp; {action}</span>
-        <span className="rounded-full border border-[#decad1] px-3 py-1.5 text-[#8d2f51]">Деталі</span>
+        <button type="button" className="rounded-full border border-[#decad1] px-3 py-1.5 text-[#8d2f51]">Деталі</button>
       </div>
     </article>
   )
@@ -200,7 +197,7 @@ function Footer() {
 }
 
 export default function SvoyaClub() {
-  const { profile, supaUser } = useAuth()
+  const { profile } = useAuth()
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const current = (params.get('section') || 'feed') as SectionKey
@@ -209,78 +206,31 @@ export default function SvoyaClub() {
 
   const [query, setQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState('Усі')
-  const [events, setEvents] = useState<ClubEvent[]>([])
-  const [posts, setPosts] = useState<ClubPost[]>([])
-  const [loading, setLoading] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [composerOpen, setComposerOpen] = useState(false)
-  const [composerTitle, setComposerTitle] = useState('')
-  const [composerBody, setComposerBody] = useState('')
-  const [composerCategory, setComposerCategory] = useState('')
-  const [composerSaving, setComposerSaving] = useState(false)
-  const [selectedPost, setSelectedPost] = useState<ClubPost | null>(null)
-  const [comments, setComments] = useState<ClubPostComment[]>([])
-  const [commentText, setCommentText] = useState('')
-  const [commentSaving, setCommentSaving] = useState(false)
+  const [publishedEntries, setPublishedEntries] = useState<SvoyaEntry[]>([])
+  const [entriesLoading, setEntriesLoading] = useState(false)
 
   useEffect(() => {
     let cancelled = false
-
-    async function load() {
-      setLoading(true)
-      setLoadError(null)
-      try {
-        const tasks: Promise<void>[] = []
-
-        if (section === 'feed' || section === 'event') {
-          tasks.push(
-            supabase
-              .from('events')
-              .select(`
-                id, title, description, category, address_text, event_datetime,
-                cover_photo_url, created_at,
-                organizer:users!events_organizer_id_fkey(id, name, avatar_url)
-              `)
-              .eq('is_public', true)
-              .eq('status', 'upcoming')
-              .order('event_datetime', { ascending: true })
-              .limit(section === 'event' ? 30 : 8)
-              .then(({ data, error }) => {
-                if (error) throw error
-                if (cancelled) return
-                setEvents((data ?? []).map((row: any) => ({
-                  ...row,
-                  organizer: normalizeRelation(row.organizer),
-                })) as ClubEvent[])
-              }) as unknown as Promise<void>,
-          )
-        } else {
-          setEvents([])
-        }
-
-        const postSection = section === 'feed' || section === 'event' ? undefined : section as ClubPostSection
-        if (section !== 'event') {
-          tasks.push(
-            listClubPosts(postSection).then((data) => {
-              if (!cancelled) setPosts(data)
-            }),
-          )
-        } else {
-          setPosts([])
-        }
-
-        await Promise.all(tasks)
-      } catch (error) {
-        console.error('[SVOYA club load]', error)
-        if (!cancelled) setLoadError('Не вдалося завантажити дані клубу. Спробуйте оновити сторінку.')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    void load()
+    setEntriesLoading(true)
+    const kind = section === 'feed' ? undefined : section
+    void listSvoyaEntries(kind)
+      .then((items) => { if (!cancelled) setPublishedEntries(items) })
+      .catch((error) => {
+        console.error('[SVOYA entries]', error)
+        if (!cancelled) setPublishedEntries([])
+      })
+      .finally(() => { if (!cancelled) setEntriesLoading(false) })
     return () => { cancelled = true }
   }, [section])
+
+  const visiblePublishedEntries = useMemo(() => {
+    const q = query.trim().toLocaleLowerCase('uk-UA')
+    return publishedEntries.filter((entry) => {
+      const matchesFilter = activeFilter === 'Усі' || entry.category === activeFilter
+      const matchesQuery = !q || `${entry.title} ${entry.description} ${entry.city} ${entry.category}`.toLocaleLowerCase('uk-UA').includes(q)
+      return matchesFilter && matchesQuery
+    })
+  }, [publishedEntries, query, activeFilter])
 
   const examples = useMemo(() => {
     const source = section === 'event' ? eventExamples : section === 'circle' ? circleExamples : feedExamples
@@ -289,35 +239,6 @@ export default function SvoyaClub() {
     return source.filter(([title, text]) => `${title} ${text}`.toLocaleLowerCase('uk-UA').includes(q))
   }, [query, section])
 
-  const filteredPosts = useMemo(() => {
-    const q = query.trim().toLocaleLowerCase('uk-UA')
-    return posts.filter((post) => {
-      const categoryOk = activeFilter === 'Усі' || post.category === activeFilter
-      const queryOk = !q || [post.title, post.body, post.category, post.city ?? '', post.author?.name ?? '']
-        .some((value) => value.toLocaleLowerCase('uk-UA').includes(q))
-      return categoryOk && queryOk
-    })
-  }, [activeFilter, posts, query])
-
-  const filteredEvents = useMemo(() => {
-    const q = query.trim().toLocaleLowerCase('uk-UA')
-    return events.filter((event) => {
-      const queryOk = !q || [event.title, event.description, event.address_text, event.category, event.organizer?.name ?? '']
-        .some((value) => value.toLocaleLowerCase('uk-UA').includes(q))
-      if (!queryOk) return false
-      if (activeFilter === 'Усі') return true
-      const haystack = `${event.category} ${event.title} ${event.description}`.toLocaleLowerCase('uk-UA')
-      const tokens: Record<string, string[]> = {
-        'Кава та розмови': ['кава', 'coffee', 'cafe', 'розмов'],
-        'Творчість': ['твор', 'art', 'creative', 'hobby', 'майстер'],
-        'Прогулянки': ['прогуля', 'walk', 'outdoor'],
-        'Спорт': ['спорт', 'sport', 'fitness', 'run', 'yoga'],
-        'Розвиток': ['розвит', 'business', 'education', 'навчан'],
-      }
-      return (tokens[activeFilter] ?? [activeFilter.toLocaleLowerCase('uk-UA')]).some((token) => haystack.includes(token))
-    })
-  }, [activeFilter, events, query])
-
   function goSection(next: SectionKey) {
     setQuery('')
     setActiveFilter('Усі')
@@ -325,77 +246,9 @@ export default function SvoyaClub() {
   }
 
   function primaryAction() {
-    if (section === 'event' || section === 'feed') {
-      navigate('/create')
-      return
-    }
-    setComposerCategory(definition.filters.find((item) => item !== 'Усі') ?? '')
-    setComposerTitle('')
-    setComposerBody('')
-    setComposerOpen(true)
+    const kind: SvoyaKind = section === 'feed' ? 'event' : section
+    navigate(`/club/create?kind=${kind}`)
   }
-
-  async function submitPost(event: FormEvent) {
-    event.preventDefault()
-    if (!supaUser || section === 'feed' || section === 'event' || composerSaving) return
-    const title = composerTitle.trim()
-    const body = composerBody.trim()
-    const category = composerCategory.trim()
-    if (title.length < 2 || body.length < 2 || !category) return
-
-    setComposerSaving(true)
-    try {
-      const created = await createClubPost({
-        authorId: supaUser.id,
-        section,
-        category,
-        title,
-        body,
-        city: profile?.city ?? null,
-      })
-      setPosts((currentPosts) => [created, ...currentPosts])
-      setComposerOpen(false)
-      setActiveFilter('Усі')
-    } catch (error) {
-      console.error('[SVOYA create post]', error)
-      setLoadError('Не вдалося опублікувати. Перевірте з’єднання і спробуйте ще раз.')
-    } finally {
-      setComposerSaving(false)
-    }
-  }
-
-  async function openPost(post: ClubPost) {
-    setSelectedPost(post)
-    setCommentText('')
-    try {
-      setComments(await listClubPostComments(post.id))
-    } catch (error) {
-      console.error('[SVOYA comments load]', error)
-      setComments([])
-    }
-  }
-
-  async function submitComment(event: FormEvent) {
-    event.preventDefault()
-    if (!supaUser || !selectedPost || !commentText.trim() || commentSaving) return
-    setCommentSaving(true)
-    try {
-      const created = await createClubPostComment({
-        postId: selectedPost.id,
-        authorId: supaUser.id,
-        body: commentText,
-      })
-      setComments((currentComments) => [...currentComments, created])
-      setCommentText('')
-    } catch (error) {
-      console.error('[SVOYA comment create]', error)
-    } finally {
-      setCommentSaving(false)
-    }
-  }
-
-  const hasLiveFeed = events.length > 0 || posts.length > 0
-  const hasLiveSection = section === 'event' ? filteredEvents.length > 0 : filteredPosts.length > 0
 
   return (
     <div className="min-h-screen bg-[#f8f6f3] text-[#382e32] lg:pl-[230px]">
@@ -496,16 +349,21 @@ export default function SvoyaClub() {
                 <Search query={query} setQuery={setQuery} />
               </div>
 
-              {loadError && <ErrorNotice text={loadError} />}
+              <Notice />
 
-              {hasLiveFeed && (
-                <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {events.slice(0, 3).map((event) => <LiveEventCard key={event.id} event={event} onOpen={() => navigate(`/event/${event.id}`)} />)}
-                  {filteredPosts.slice(0, 6).map((post) => <LivePostCard key={post.id} post={post} onOpen={() => { void openPost(post) }} />)}
-                </div>
+              {entriesLoading && <div className="py-6 text-center text-[10px] text-[#8f8387]">Завантажуємо публікації…</div>}
+
+              {visiblePublishedEntries.some((entry) => !entry.is_demo) && (
+                <>
+                  <div className="mt-6 flex items-center justify-between">
+                    <h3 className="text-[17px] font-extrabold">Нове у клубі</h3>
+                    <span className="text-[9px] text-[#9a8c91]">Публікації учасниць</span>
+                  </div>
+                  <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    {visiblePublishedEntries.filter((entry) => !entry.is_demo).map((entry) => <PublishedEntryCard key={entry.id} entry={entry} />)}
+                  </div>
+                </>
               )}
-
-              {!hasLiveFeed && <Notice />}
 
               <div className="mt-6 flex items-center justify-between">
                 <h3 className="text-[17px] font-extrabold">З чого можна почати</h3>
@@ -550,74 +408,35 @@ export default function SvoyaClub() {
                 <Search query={query} setQuery={setQuery} />
               </div>
 
-              {loadError && <ErrorNotice text={loadError} />}
+              <Notice />
 
-              {!loading && !hasLiveSection && <Notice />}
-
-              {section === 'event' && filteredEvents.length > 0 && (
-                <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {filteredEvents.map((event) => <LiveEventCard key={event.id} event={event} onOpen={() => navigate(`/event/${event.id}`)} />)}
-                </div>
-              )}
-
-              {section !== 'event' && filteredPosts.length > 0 && (
-                <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {filteredPosts.map((post) => <LivePostCard key={post.id} post={post} onOpen={() => { void openPost(post) }} />)}
-                </div>
-              )}
-
-              {(section === 'event' || section === 'circle') && !hasLiveSection && !loading && (
+              {(section === 'event' || section === 'circle') && (
                 <>
                   <div className="mt-6 flex items-center justify-between">
                     <h3 className="text-[17px] font-extrabold">З чого можна почати</h3>
                     <p className="text-[9px] text-[#9a8c91]">Приклади форматів — запис ще не відкрито</p>
                   </div>
                   <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                    {examples.map((item) => <ExampleCard key={item[0]} item={item} />)}
+                    {visiblePublishedEntries.filter((entry) => entry.is_demo).map((entry) => <PublishedEntryCard key={entry.id} entry={entry} />)}
                   </div>
                 </>
               )}
 
-              {(section === 'beauty' || section === 'business' || section === 'help') && !hasLiveSection && !loading && (
-                <EmptyPublication section={section} onCreate={primaryAction} />
+              {(section === 'beauty' || section === 'business' || section === 'help') && (
+                visiblePublishedEntries.length > 0 ? (
+                  <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    {visiblePublishedEntries.map((entry) => <PublishedEntryCard key={entry.id} entry={entry} />)}
+                  </div>
+                ) : (
+                  <EmptyPublication section={section} onCreate={primaryAction} />
+                )
               )}
-
-              {loading && <div className="py-14 text-center text-[11px] text-[#8c7f84]">Завантажуємо…</div>}
             </section>
           </>
         )}
 
         <Footer />
       </main>
-
-      {composerOpen && section !== 'feed' && section !== 'event' && (
-        <ComposerModal
-          section={section}
-          definition={definition}
-          title={composerTitle}
-          body={composerBody}
-          category={composerCategory}
-          city={profile?.city ?? ''}
-          saving={composerSaving}
-          onTitle={setComposerTitle}
-          onBody={setComposerBody}
-          onCategory={setComposerCategory}
-          onClose={() => setComposerOpen(false)}
-          onSubmit={submitPost}
-        />
-      )}
-
-      {selectedPost && (
-        <PostModal
-          post={selectedPost}
-          comments={comments}
-          commentText={commentText}
-          commentSaving={commentSaving}
-          onCommentText={setCommentText}
-          onSubmitComment={submitComment}
-          onClose={() => setSelectedPost(null)}
-        />
-      )}
     </div>
   )
 }
@@ -643,65 +462,8 @@ function Notice() {
         <div className="font-semibold text-[#69585e]">❀ &nbsp; Ми збираємо перше коло.</div>
         <div className="mt-1 pl-5 text-[#91868a]">Реальні події та пропозиції з’являться тут після публікації учасницями.</div>
       </div>
-      <span className="shrink-0 underline underline-offset-3">Додати свою</span>
+      <button type="button" className="shrink-0 underline underline-offset-3">Додати свою</button>
     </div>
-  )
-}
-
-function ErrorNotice({ text }: { text: string }) {
-  return <div className="mt-5 rounded-[9px] border border-[#e2c8cf] bg-[#f6e9ed] px-4 py-3 text-[10px] text-[#7d3d54]">{text}</div>
-}
-
-function LiveEventCard({ event, onOpen }: { event: ClubEvent; onOpen: () => void }) {
-  return (
-    <article className="overflow-hidden rounded-[11px] border border-[#e1d5d0] bg-[#fcfbf9]">
-      <button type="button" onClick={onOpen} className="block w-full text-left">
-        <div className="h-[150px] bg-[#eadfe2]">
-          {event.cover_photo_url
-            ? <img src={event.cover_photo_url} alt="" className="h-full w-full object-cover" />
-            : <div className="grid h-full place-items-center font-[Georgia] text-[28px] text-[#8d2f51]">СВОЯ</div>}
-        </div>
-        <div className="p-4">
-          <div className="flex items-center justify-between gap-3 text-[8px] text-[#94858a]">
-            <span>{formatDate(event.event_datetime)}</span>
-            <span>{event.address_text || 'Місце уточнюється'}</span>
-          </div>
-          <h3 className="mt-2 text-[16px] font-extrabold">{event.title}</h3>
-          <p className="mt-2 line-clamp-2 text-[10px] leading-4 text-[#746a6d]">{event.description}</p>
-          <div className="mt-4 border-t border-[#eee5e1] pt-3 text-[9px] font-semibold text-[#8d2f51]">Відкрити подію →</div>
-        </div>
-      </button>
-    </article>
-  )
-}
-
-function LivePostCard({ post, onOpen }: { post: ClubPost; onOpen: () => void }) {
-  return (
-    <article className="rounded-[11px] border border-[#e1d5d0] bg-[#fcfbf9] p-4">
-      <div className="flex items-start gap-3">
-        <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-[#eadde2] text-[12px] font-bold text-[#7f2949]">
-          {post.author?.avatar_url
-            ? <img src={post.author.avatar_url} alt="" className="h-full w-full object-cover" />
-            : (post.author?.name?.charAt(0) ?? 'С')}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2 text-[8px] text-[#9a8c91]">
-            <span>{post.author?.name ?? 'Учасниця'}</span>
-            <span>·</span>
-            <span>{post.city || post.author?.city || 'СВОЯ'}</span>
-            <span>·</span>
-            <span>{formatDate(post.created_at)}</span>
-          </div>
-          <div className="mt-2 flex items-center gap-2">
-            <span className="rounded-full bg-[#f2e5e9] px-2 py-1 text-[8px] font-semibold text-[#8d2f51]">{sectionLabels[post.section]}</span>
-            <span className="text-[8px] text-[#8a7d81]">{post.category}</span>
-          </div>
-          <h3 className="mt-3 text-[16px] font-extrabold leading-5">{post.title}</h3>
-          <p className="mt-2 line-clamp-3 text-[10px] leading-4 text-[#746a6d]">{post.body}</p>
-        </div>
-      </div>
-      <button type="button" onClick={onOpen} className="mt-4 rounded-full border border-[#decad1] px-3 py-1.5 text-[9px] text-[#8d2f51]">Деталі й обговорення</button>
-    </article>
   )
 }
 
@@ -710,7 +472,7 @@ function EmptyPublication({ section, onCreate }: { section: 'beauty' | 'business
 
   return (
     <>
-      <div className="mt-4 flex min-h-[220px] flex-col items-center justify-center rounded-[8px] border border-dashed border-[#dfcbd2] px-6 py-10 text-center">
+      <div id={`empty-${section}`} className="mt-4 flex min-h-[220px] flex-col items-center justify-center rounded-[8px] border border-dashed border-[#dfcbd2] px-6 py-10 text-center">
         <div className="text-[27px] text-[#9b6d7f]">{state.icon}</div>
         <h3 className="mt-4 font-[Georgia] text-[25px] font-normal text-[#744154]">{state.title}</h3>
         <p className="mt-2 max-w-[430px] text-[11px] leading-5 text-[#8f7580]">{state.text}</p>
@@ -725,127 +487,5 @@ function EmptyPublication({ section, onCreate }: { section: 'beauty' | 'business
         </div>
       )}
     </>
-  )
-}
-
-function ComposerModal(props: {
-  section: ClubPostSection
-  definition: SectionDefinition
-  title: string
-  body: string
-  category: string
-  city: string
-  saving: boolean
-  onTitle: (value: string) => void
-  onBody: (value: string) => void
-  onCategory: (value: string) => void
-  onClose: () => void
-  onSubmit: (event: FormEvent) => void
-}) {
-  return (
-    <div className="fixed inset-0 z-[100] grid place-items-center bg-[#261821]/55 p-4 backdrop-blur-sm" onMouseDown={(event) => { if (event.currentTarget === event.target) props.onClose() }}>
-      <form onSubmit={props.onSubmit} className="w-full max-w-[620px] rounded-[22px] border border-[#e1d5d0] bg-[#fffaf7] p-6 shadow-2xl">
-        <div className="flex items-start justify-between gap-6">
-          <div>
-            <div className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#9a4562]">{props.definition.eyebrow}</div>
-            <h2 className="mt-2 font-[Georgia] text-[34px] leading-none text-[#5d3142]">{props.definition.primaryAction}</h2>
-          </div>
-          <button type="button" onClick={props.onClose} className="grid h-9 w-9 place-items-center rounded-full border border-[#dfd1cd] text-[18px] text-[#795663]">×</button>
-        </div>
-
-        <div className="mt-6 grid gap-4">
-          <label className="text-[10px] font-semibold text-[#6f5e64]">
-            Категорія
-            <select value={props.category} onChange={(event) => props.onCategory(event.target.value)} required className="mt-1.5 h-11 w-full rounded-[11px] border border-[#ddd0cc] bg-white px-3 text-[12px] outline-none focus:border-[#9d536c]">
-              <option value="">Оберіть категорію</option>
-              {props.definition.filters.filter((item) => item !== 'Усі').map((item) => <option key={item}>{item}</option>)}
-            </select>
-          </label>
-
-          <label className="text-[10px] font-semibold text-[#6f5e64]">
-            Заголовок
-            <input value={props.title} onChange={(event) => props.onTitle(event.target.value)} maxLength={120} required className="mt-1.5 h-11 w-full rounded-[11px] border border-[#ddd0cc] bg-white px-3 text-[12px] outline-none focus:border-[#9d536c]" placeholder="Коротко і зрозуміло" />
-          </label>
-
-          <label className="text-[10px] font-semibold text-[#6f5e64]">
-            Опис
-            <textarea value={props.body} onChange={(event) => props.onBody(event.target.value)} maxLength={2000} rows={6} required className="mt-1.5 w-full resize-none rounded-[11px] border border-[#ddd0cc] bg-white px-3 py-3 text-[12px] leading-5 outline-none focus:border-[#9d536c]" placeholder="Розкажіть деталі, щоб іншим було легко відгукнутися." />
-          </label>
-
-          <div className="text-[9px] text-[#94858a]">Місто: {props.city || 'не вказано у профілі'}</div>
-        </div>
-
-        <div className="mt-6 flex justify-end gap-2">
-          <button type="button" onClick={props.onClose} className="rounded-full border border-[#decfd0] px-5 py-2.5 text-[10px] font-semibold text-[#72545f]">Скасувати</button>
-          <button type="submit" disabled={props.saving || !props.category || props.title.trim().length < 2 || props.body.trim().length < 2} className="rounded-full bg-[#8d2f51] px-5 py-2.5 text-[10px] font-semibold text-white disabled:opacity-50">
-            {props.saving ? 'Публікуємо…' : 'Опублікувати'}
-          </button>
-        </div>
-      </form>
-    </div>
-  )
-}
-
-function PostModal(props: {
-  post: ClubPost
-  comments: ClubPostComment[]
-  commentText: string
-  commentSaving: boolean
-  onCommentText: (value: string) => void
-  onSubmitComment: (event: FormEvent) => void
-  onClose: () => void
-}) {
-  return (
-    <div className="fixed inset-0 z-[110] grid place-items-center bg-[#261821]/55 p-4 backdrop-blur-sm" onMouseDown={(event) => { if (event.currentTarget === event.target) props.onClose() }}>
-      <div className="flex max-h-[88vh] w-full max-w-[720px] flex-col rounded-[22px] border border-[#e1d5d0] bg-[#fffaf7] shadow-2xl">
-        <div className="flex items-start justify-between border-b border-[#eadfdb] p-6">
-          <div>
-            <div className="text-[9px] font-semibold uppercase tracking-[0.13em] text-[#9a4562]">{sectionLabels[props.post.section]} · {props.post.category}</div>
-            <h2 className="mt-2 font-[Georgia] text-[34px] leading-none text-[#5d3142]">{props.post.title}</h2>
-          </div>
-          <button type="button" onClick={props.onClose} className="grid h-9 w-9 place-items-center rounded-full border border-[#dfd1cd] text-[18px] text-[#795663]">×</button>
-        </div>
-
-        <div className="overflow-auto p-6">
-          <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center overflow-hidden rounded-full bg-[#eadde2] text-[12px] font-bold text-[#7f2949]">
-              {props.post.author?.avatar_url
-                ? <img src={props.post.author.avatar_url} alt="" className="h-full w-full object-cover" />
-                : (props.post.author?.name?.charAt(0) ?? 'С')}
-            </div>
-            <div>
-              <div className="text-[11px] font-semibold">{props.post.author?.name ?? 'Учасниця'}</div>
-              <div className="text-[9px] text-[#95878c]">{props.post.city || props.post.author?.city || 'СВОЯ'} · {formatDate(props.post.created_at)}</div>
-            </div>
-          </div>
-
-          <p className="mt-5 whitespace-pre-wrap text-[12px] leading-6 text-[#5f5559]">{props.post.body}</p>
-
-          <div className="mt-7 border-t border-[#eadfdb] pt-5">
-            <h3 className="text-[14px] font-extrabold">Обговорення</h3>
-            <div className="mt-3 grid gap-3">
-              {props.comments.length === 0 && <div className="rounded-[10px] bg-[#f1ede9] px-4 py-4 text-[10px] text-[#8b7f83]">Поки без коментарів. Можна бути першою.</div>}
-              {props.comments.map((comment) => (
-                <div key={comment.id} className="rounded-[12px] border border-[#e6dad6] bg-white/75 p-3">
-                  <div className="flex items-center gap-2 text-[9px] text-[#8e7f84]">
-                    <strong className="text-[#58484e]">{comment.author?.name ?? 'Учасниця'}</strong>
-                    <span>·</span>
-                    <span>{formatDate(comment.created_at)}</span>
-                  </div>
-                  <p className="mt-2 whitespace-pre-wrap text-[11px] leading-5 text-[#655b5e]">{comment.body}</p>
-                </div>
-              ))}
-            </div>
-
-            <form onSubmit={props.onSubmitComment} className="mt-4 flex gap-2">
-              <input value={props.commentText} onChange={(event) => props.onCommentText(event.target.value)} maxLength={1000} placeholder="Написати коментар…" className="h-11 min-w-0 flex-1 rounded-full border border-[#ddd0cc] bg-white px-4 text-[11px] outline-none focus:border-[#9d536c]" />
-              <button type="submit" disabled={props.commentSaving || !props.commentText.trim()} className="rounded-full bg-[#8d2f51] px-5 text-[10px] font-semibold text-white disabled:opacity-50">
-                {props.commentSaving ? '…' : 'Надіслати'}
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
   )
 }
