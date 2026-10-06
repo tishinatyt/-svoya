@@ -1,1 +1,0 @@
-SVOYA source recovery test
