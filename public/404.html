@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <title>СВОЯ</title>
+    <script>
+      (function () {
+        var l = window.location;
+        var marker = '/-svoya/';
+        var index = l.pathname.indexOf(marker);
+        var base = index >= 0 ? l.pathname.slice(0, index + marker.length) : '/-svoya/';
+        try {
+          sessionStorage.setItem('svoya:redirect', l.pathname + l.search + l.hash);
+        } catch (_) {}
+        l.replace(l.protocol + '//' + l.host + base);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
