@@ -85,7 +85,7 @@ export default function Profile() {
 
   async function addGalleryPhoto(path: string) {
     if (!supaUser || !profile) return
-    const photos = [...(profile.profile_photos ?? []), path].slice(0, 6)
+    const photos = [...(profile.profile_photos ?? []), path].slice(0, 10)
     const { error: updateError } = await supabase.from('users').update({ profile_photos: photos }).eq('id', supaUser.id)
     if (updateError) {
       await removeProfilePhoto(path).catch(() => undefined)
