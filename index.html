@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#65182d" />
+  <title>СВОЯ — жіночий клуб</title>
+  <meta name="description" content="СВОЯ — жіночий клуб у Чернігові. Знайомства, зустрічі, кола за інтересами, beauty, бізнес, допомога та події." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="СВОЯ — головна">
+      <span class="brand-mark">СВОЯ</span>
+      <span class="brand-sub">ЖІНОЧИЙ КЛУБ</span>
+    </a>
+    <button class="nav-toggle" aria-label="Відкрити меню" aria-expanded="false">☰</button>
+    <nav class="nav" aria-label="Головна навігація">
+      <a href="#about">Про нас</a>
+      <a href="#directions">Що нас об’єднує</a>
+      <a href="#join">Як долучитися</a>
+      <button class="link-button" data-open-profile>Увійти до клубу</button>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy reveal">
+        <div class="eyebrow">ЖІНКИ. ЗНАЙОМСТВА. ЖИТТЯ.</div>
+        <h1>Твоя людина може бути зовсім поруч.</h1>
+        <p class="hero-lead">Для кави без поспіху. Для сміливих ідей. Для звичайного «як ти?».</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-open-profile>Знайти своє коло</button>
+          <a class="btn btn-ghost" href="#directions">Подивитися напрямки</a>
+        </div>
+        <div class="hero-note">ПОЧИНАЄМО У ЧЕРНІГОВІ · 18+</div>
+      </div>
+
+      <div class="hero-visual reveal">
+        <div class="hero-photo hero-photo-main">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=85" alt="Учасниця жіночого клубу" />
+        </div>
+        <div class="hero-photo hero-photo-small">
+          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=85" alt="Дівчина усміхається" />
+        </div>
+        <div class="hero-stamp" aria-hidden="true">СВОЯ<br><small>твої люди поруч</small></div>
+      </div>
+    </section>
+
+    <section class="moment-strip">
+      <div class="section-kicker">01 / СВОЇ МОМЕНТИ</div>
+      <div class="ticker-shell">
+        <div class="ticker" id="photoTicker" aria-label="Стрічка фото учасниць"></div>
+      </div>
+      <div class="ticker-controls">
+        <span>Своє коло починається зі знайомства.</span>
+        <button id="tickerToggle" class="mini-btn" type="button">Пауза</button>
+      </div>
+    </section>
+
+    <section id="about" class="split-section">
+      <div class="big-statement reveal">
+        <span class="section-kicker">ЦЕ І Є «СВОЯ»</span>
+        <h2>Дорослій дружбі теж потрібне місце.</h2>
+      </div>
+      <div class="body-copy reveal">
+        <p>Ми можемо жити на сусідніх вулицях і так і не зустрітися. «СВОЯ» — жіночий клуб, який допомагає зробити цей перший крок.</p>
+        <p>Знайомитися без незручних приводів. Пробувати нове разом. Знаходити підтримку для себе та своєї справи.</p>
+        <p class="accent-line">Без потреби бути ідеальною. Достатньо бути собою і мати бажання зустрітися.</p>
+      </div>
+    </section>
+
+    <section class="plans">
+      <div class="section-heading reveal">
+        <span class="section-kicker">НЕВЕЛИКІ ПЛАНИ. СПРАВЖНІ ЗНАЙОМСТВА.</span>
+        <h2>З чого почнеться твоя історія?</h2>
+        <p>Обирай те, що відгукується. Або запропонуй щось своє.</p>
+      </div>
+      <div class="plan-grid">
+        <article class="plan-card reveal">
+          <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=82" alt="Подруги спілкуються на прогулянці" />
+          <div class="plan-card-copy">
+            <span>01 / ЗМІНИТИ МАРШРУТ</span>
+            <h3>Вийти на прогулянку. Залишитися на розмову.</h3>
+            <p>Звичайний день, нове знайомство і місто, яке стає трохи ближчим.</p>
+          </div>
+        </article>
+        <article class="plan-card reveal">
+          <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=82" alt="Творча зустріч" />
+          <div class="plan-card-copy">
+            <span>02 / СПРОБУВАТИ РАЗОМ</span>
+            <h3>Щось нове — у хорошій компанії.</h3>
+            <p>Творчість, майстерки, виставки. Не обов’язково вміти — можна просто спробувати.</p>
+          </div>
+        </article>
+        <article class="plan-card reveal">
+          <img src="https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&w=1200&q=82" alt="Жінки спілкуються за кавою" />
+          <div class="plan-card-copy">
+            <span>03 / ЗУСТРІТИСЯ ЗНОВУ</span>
+            <h3>«На тому ж місці, наступної суботи?»</h3>
+            <p>Коло за інтересами, спільний чат і наступна зустріч, на яку чекаєш.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="directions" class="directions">
+      <div class="section-heading reveal">
+        <span class="section-kicker">ОДИН КЛУБ. РІЗНІ СТОРОНИ ТЕБЕ.</span>
+        <h2>Ти — більше, ніж одна роль.</h2>
+        <p>Тут є місце і відпочинку, і твоїй справі. І бажанню подбати про себе, і можливості підтримати іншу.</p>
+      </div>
+      <div class="direction-grid">
+        <article class="direction-card reveal"><span>01</span><h3>Зустрітися</h3><p>Кава, прогулянки та маленькі пригоди. Знайди привід вийти з дому.</p></article>
+        <article class="direction-card reveal"><span>02</span><h3>Знайти своїх</h3><p>Книги, творчість, спорт. Твоє коло людей зі спільними інтересами.</p></article>
+        <article class="direction-card reveal"><span>03</span><h3>Подбати про себе</h3><p>Beauty-послуги від учасниць клубу. Знайомся з майстринями поруч.</p></article>
+        <article class="direction-card reveal"><span>04</span><h3>Зростати разом</h3><p>Власна справа, партнерства й досвід, яким хочеться поділитися.</p></article>
+        <article class="direction-card reveal"><span>05</span><h3>Бути підтримкою</h3><p>Попросити про допомогу. Відгукнутися. Відчути, що ти не сама.</p></article>
+        <article class="direction-card reveal"><span>06</span><h3>Бути в курсі</h3><p>Події, нові зустрічі й важливі оновлення клубу в одному місці.</p></article>
+      </div>
+    </section>
+
+    <section class="event-feed">
+      <div class="section-heading reveal">
+        <span class="section-kicker">ЛЕНТА ПОДІЙ</span>
+        <h2>Що відбувається поруч</h2>
+      </div>
+      <div class="event-grid">
+        <article class="event-card reveal">
+          <span class="date">СБ · 10:30</span>
+          <h3>Кава без поспіху</h3>
+          <p>Невелика ранкова зустріч для нових знайомств.</p>
+          <button class="text-action" data-open-profile>Хочу піти →</button>
+        </article>
+        <article class="event-card reveal">
+          <span class="date">НД · 15:00</span>
+          <h3>Прогулянка містом</h3>
+          <p>Спокійний маршрут, розмова й нові люди поруч.</p>
+          <button class="text-action" data-open-profile>Хочу піти →</button>
+        </article>
+        <article class="event-card reveal">
+          <span class="date">СР · 18:30</span>
+          <h3>Business circle</h3>
+          <p>Обмін досвідом, контактами та ідеями без офіціозу.</p>
+          <button class="text-action" data-open-profile>Хочу піти →</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="join" class="join-section">
+      <div class="section-heading reveal">
+        <span class="section-kicker">НЕ ТРЕБА ОСОБЛИВОГО ПРИВОДУ</span>
+        <h2>Перший крок — познайомитися.</h2>
+      </div>
+      <div class="steps">
+        <div class="step reveal"><span>01</span><h3>Покажи себе</h3><p>Додай фото, місто та кілька слів про те, що любиш.</p></div>
+        <div class="step reveal"><span>02</span><h3>Знайди, що відгукується</h3><p>Обери зустріч, коло чи пропозицію учасниці. Залиши заявку.</p></div>
+        <div class="step reveal"><span>03</span><h3>Домовтеся про зустріч</h3><p>Дочекайся підтвердження. Узгодьте деталі й побачтеся наживо.</p></div>
+      </div>
+      <div class="join-actions reveal">
+        <button class="btn btn-primary btn-large" data-open-profile>Створити профіль</button>
+        <button class="btn btn-ghost btn-large" id="notifyButton">Увімкнути сповіщення</button>
+      </div>
+    </section>
+
+    <section class="closing">
+      <p>СВОЇ ЛЮДИ НЕ ЗАВЖДИ ЗНАХОДЯТЬСЯ САМІ.</p>
+      <h2>Іноді достатньо сказати «привіт».</h2>
+      <button class="btn btn-light" data-open-profile>Я з вами</button>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand brand-footer">
+      <span class="brand-mark">СВОЯ</span>
+      <span class="brand-sub">ТВОЇ ЛЮДИ ПОРУЧ</span>
+    </div>
+    <div>Жіночий клуб · Чернігів · 18+</div>
+    <div>Знайомства, які продовжуються.</div>
+  </footer>
+
+  <dialog id="profileDialog" class="profile-dialog">
+    <form id="profileForm" method="dialog" class="profile-form">
+      <button type="button" class="dialog-close" data-close-profile aria-label="Закрити">×</button>
+      <span class="section-kicker">ТВОЄ ЗНАЙОМСТВО ЗІ «СВОЯ»</span>
+      <h2>Створити профіль</h2>
+      <p>Основне фото обов’язкове. Додатково можна завантажити до 10 фото.</p>
+
+      <label>Ім’я
+        <input name="name" required maxlength="60" placeholder="Як до тебе звертатися?" />
+      </label>
+      <label>Місто
+        <input name="city" required maxlength="80" value="Чернігів" />
+      </label>
+      <label>Кілька слів про себе
+        <textarea name="about" rows="4" maxlength="500" placeholder="Що любиш, що хочеш спробувати, кого шукаєш у клубі?"></textarea>
+      </label>
+      <label>Основне фото *
+        <input id="mainPhoto" name="mainPhoto" type="file" accept="image/*" required />
+      </label>
+      <label>Галерея до 10 фото
+        <input id="galleryPhotos" name="galleryPhotos" type="file" accept="image/*" multiple />
+        <small id="galleryHint">0 / 10 фото</small>
+      </label>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close-profile>Скасувати</button>
+        <button type="submit" class="btn btn-primary">Продовжити</button>
+      </div>
+      <div id="formMessage" class="form-message" aria-live="polite"></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
