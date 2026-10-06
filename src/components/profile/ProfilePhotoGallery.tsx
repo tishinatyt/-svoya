@@ -50,13 +50,13 @@ export function ProfilePhotoGalleryEditor({ userId, photos, onAdd, onRemove, dis
 
   return (
     <section className="border-t border-brand-border pt-5">
-      <div className="mb-3 flex items-center justify-between gap-3"><div><h2 className="text-sm font-extrabold text-brand-ink">Фото профілю</h2><p className="mt-0.5 text-[11px] text-brand-ink-muted">Додайте до 6 додаткових фото.</p></div><span className="rounded-full bg-brand-accent-soft px-2 py-1 text-[10px] font-extrabold text-brand-accent">{photos.length}/6 фото</span></div>
+      <div className="mb-3 flex items-center justify-between gap-3"><div><h2 className="text-sm font-extrabold text-brand-ink">Фото профілю</h2><p className="mt-0.5 text-[11px] text-brand-ink-muted">Додайте до 10 додаткових фото.</p></div><span className="rounded-full bg-brand-accent-soft px-2 py-1 text-[10px] font-extrabold text-brand-accent">{photos.length}/10 фото</span></div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {photos.map((path, index) => <div key={path} className="group relative aspect-square overflow-hidden rounded-xl bg-brand-surface-muted"><img src={profilePhotoUrl(path)} alt={`Фото профілю ${index + 1}`} className="h-full w-full object-cover" /><button type="button" onClick={() => { void handleRemove(path) }} disabled={Boolean(busyPath) || disabled} aria-label={`Видалити фото ${index + 1}`} className="absolute right-1.5 top-1.5 grid h-8 w-8 place-items-center rounded-full bg-black/60 text-sm font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent disabled:opacity-50">{busyPath === path ? '…' : '×'}</button></div>)}
         {photos.length < MAX_PROFILE_PHOTOS && <button type="button" onClick={() => inputRef.current?.click()} disabled={uploading || disabled} className="relative grid aspect-square overflow-hidden place-items-center rounded-xl border border-dashed border-brand-accent/40 bg-brand-accent-soft/45 text-center text-xs font-bold text-brand-accent hover:bg-brand-accent-soft disabled:opacity-70">{previewUrl ? <><img src={previewUrl} alt="Попередній перегляд нового фото" className="h-full w-full object-cover" /><span className="absolute inset-x-0 bottom-0 bg-black/60 px-2 py-1.5 text-[10px] text-white">Завантажуємо…</span></> : <span><span className="block text-2xl leading-none">+</span><span className="mt-1 block">Додати фото</span></span>}</button>}
       </div>
       <input ref={inputRef} type="file" accept={PROFILE_PHOTO_ACCEPT} onChange={handleUpload} className="hidden" aria-label="Додати фото до галереї" />
-      {photos.length >= MAX_PROFILE_PHOTOS && <p className="mt-2 text-xs text-brand-ink-muted">Досягнуто максимум 6 фото.</p>}
+      {photos.length >= MAX_PROFILE_PHOTOS && <p className="mt-2 text-xs text-brand-ink-muted">Досягнуто максимум 10 фото.</p>}
       {error && <p role="alert" className="mt-2 text-xs text-red-600">{error}</p>}
     </section>
   )
