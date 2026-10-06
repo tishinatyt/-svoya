@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 
-export const MAX_PROFILE_PHOTOS = 6
+export const MAX_PROFILE_PHOTOS = 10
 export const PROFILE_PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp,image/gif'
 
 export function profilePhotoUrl(path: string) {
