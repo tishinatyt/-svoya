@@ -1,0 +1,324 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-bg: #F6F3F0;
+  --color-brand-accent: #8D2F51;
+  --color-brand-accent-hover: #742642;
+  --color-brand-accent-soft: #F1E2E7;
+  --color-brand-surface-muted: #EEEAE5;
+  --color-brand-petrol: #8D2F51;
+  --color-brand-petrol-light: #A95A75;
+  --color-brand-amber: #8D2F51;
+  --color-brand-amber-light: #B96582;
+  --color-brand-ink: #342A2E;
+  --color-brand-ink-soft: #65565C;
+  --color-brand-ink-muted: #8B7E83;
+  --color-brand-border: #E0D6D2;
+  --color-brand-border-strong: #CCBCB8;
+  --color-home-bg: #F6F3F0;
+  --color-home-tape-lavender: #EEDFE4;
+  --color-home-tape-peach: #EFE2D9;
+  --shadow-card: 0 2px 10px rgba(23, 23, 28, 0.035);
+  --shadow-card-hover: 0 8px 24px rgba(23, 23, 28, 0.07);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Manrope', Inter, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  background: #f6f3f0;
+}
+
+body {
+  font-family: 'Manrope', Inter, sans-serif;
+  margin: 0;
+  min-width: 320px;
+  background-color: transparent;
+  color: #342A2E;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100dvh;
+  isolation: isolate;
+}
+
+/* One stable, non-interactive atmosphere layer for every route. */
+.app-fixed-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 48rem 38rem at 14% 12%, rgba(168, 137, 225, 0.34), transparent 68%),
+    radial-gradient(ellipse 45rem 38rem at 92% 68%, rgba(247, 177, 142, 0.3), transparent 67%),
+    radial-gradient(ellipse 30rem 25rem at 43% 94%, rgba(167, 219, 202, 0.2), transparent 68%),
+    radial-gradient(ellipse 25rem 22rem at 78% 4%, rgba(232, 161, 197, 0.14), transparent 70%),
+    linear-gradient(145deg, #fbf9fd 0%, #f4f0f9 50%, #fbf7f3 100%);
+}
+
+.app-fixed-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  background-image:
+    radial-gradient(circle, rgba(72, 57, 102, 0.2) 0.55px, transparent 0.7px),
+    repeating-linear-gradient(118deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 5px);
+  background-size: 13px 13px, 7px 7px;
+  mask-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 0.68));
+}
+
+/* Let the fixed atmosphere remain subtly visible under standard page surfaces. */
+.bg-brand-bg {
+  background-color: rgba(247, 247, 250, 0.88);
+}
+
+@media (max-width: 639px) {
+  .app-fixed-background {
+    background:
+      radial-gradient(ellipse 25rem 32rem at 2% 8%, rgba(168, 137, 225, 0.27), transparent 67%),
+      radial-gradient(ellipse 24rem 30rem at 102% 64%, rgba(247, 177, 142, 0.22), transparent 68%),
+      radial-gradient(ellipse 18rem 22rem at 35% 96%, rgba(167, 219, 202, 0.14), transparent 70%),
+      linear-gradient(145deg, #faf8fc, #f7f4fa 58%, #fbf8f5);
+  }
+
+  .app-fixed-background::after { opacity: 0.11; }
+}
+
+.home-event-card {
+  box-shadow: 0 2px 7px rgba(48, 35, 72, 0.07), 0 8px 20px rgba(48, 35, 72, 0.055);
+}
+
+@media (min-width: 1024px) {
+  .home-event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(48, 35, 72, 0.1), 0 18px 34px rgba(48, 35, 72, 0.075);
+  }
+}
+
+.top-bar-surface {
+  border-color: #BDB0DD;
+  background: linear-gradient(90deg, rgba(205, 193, 238, 0.97), rgba(221, 208, 244, 0.97) 52%, rgba(211, 195, 232, 0.97));
+  box-shadow: 0 2px 12px rgba(71, 51, 125, 0.12);
+}
+
+/* Quiet, non-interactive atmosphere behind the Home feeds. */
+.home-decorations {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.home-decorations::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  background-image: radial-gradient(circle, rgba(78, 64, 110, 0.11) 0.45px, transparent 0.55px);
+  background-size: 5px 5px;
+  mix-blend-mode: multiply;
+}
+
+.home-decoration-glow,
+.home-decoration-doodle {
+  position: absolute;
+}
+
+.home-decoration-glow {
+  border-radius: 999px;
+  filter: blur(54px);
+  opacity: 0.34;
+}
+
+.home-decoration-glow-violet {
+  top: -5rem;
+  left: 7%;
+  width: 19rem;
+  height: 15rem;
+  background: rgba(184, 166, 255, 0.38);
+}
+
+.home-decoration-glow-pink {
+  top: 18rem;
+  right: -7rem;
+  width: 17rem;
+  height: 18rem;
+  background: rgba(255, 190, 218, 0.3);
+}
+
+.home-decoration-glow-peach {
+  bottom: 4rem;
+  left: -6rem;
+  width: 19rem;
+  height: 16rem;
+  background: rgba(255, 205, 169, 0.27);
+}
+
+.home-decoration-glow-mint {
+  right: 20%;
+  bottom: -7rem;
+  width: 17rem;
+  height: 16rem;
+  background: rgba(185, 239, 220, 0.28);
+}
+
+.home-decoration-doodle {
+  color: #6846ff;
+  opacity: 0.055;
+}
+
+.home-doodle-friends { top: 5.5rem; right: -2.5rem; width: 8.5rem; transform: rotate(-5deg); }
+.home-doodle-pin { top: 36%; left: -1.2rem; width: 3.7rem; color: #8a70ff; transform: rotate(8deg); }
+.home-doodle-coffee { top: 54%; right: -1rem; width: 4.3rem; color: #d46f9f; transform: rotate(-7deg); }
+.home-doodle-heart { top: 68%; left: -0.8rem; width: 3.3rem; color: #df7da9; transform: rotate(-10deg); }
+.home-doodle-chat { top: 79%; right: -1rem; width: 4.1rem; color: #7395d1; transform: rotate(7deg); }
+.home-doodle-music { display: none; }
+.home-doodle-bike { display: none; }
+.home-doodle-sparkles { top: 8.5rem; left: 1%; width: 3rem; color: #8a70ff; opacity: 0.045; }
+
+@media (max-width: 639px) {
+  .home-decoration-glow {
+    filter: blur(48px);
+    opacity: 0.3;
+  }
+
+  .home-decoration-doodle { opacity: 0.04; }
+  .home-doodle-friends { top: 8rem; right: -3.8rem; width: 7rem; }
+  .home-doodle-pin { top: 42%; left: -1.4rem; width: 3rem; }
+  .home-doodle-heart { top: 72%; left: -1.1rem; width: 2.8rem; }
+  .home-doodle-coffee,
+  .home-doodle-chat,
+  .home-doodle-music,
+  .home-doodle-bike { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .home-decoration-glow { filter: blur(68px); }
+  .home-decoration-glow-violet { top: -8rem; left: 4%; width: 28rem; height: 22rem; }
+  .home-decoration-glow-pink { top: 20%; right: -5rem; width: 25rem; height: 24rem; }
+  .home-decoration-glow-peach { bottom: -6rem; left: -5rem; width: 25rem; height: 23rem; }
+  .home-decoration-glow-mint { right: 25%; bottom: -10rem; width: 26rem; height: 23rem; }
+
+  .home-doodle-friends { top: 5.5rem; right: 0.5%; width: 10.5rem; }
+  .home-doodle-pin { top: 39%; left: 0.7%; width: 4.8rem; }
+  .home-doodle-coffee { top: 55%; right: 0.7%; width: 5.2rem; }
+  .home-doodle-heart { top: 17%; left: 1.5%; width: 3.5rem; }
+  .home-doodle-chat { top: 72%; right: 1%; width: 5rem; }
+  .home-doodle-music { display: block; top: 43%; right: 1%; width: 4.6rem; color: #7395d1; }
+  .home-doodle-bike { display: block; bottom: -1.5rem; left: 1%; width: 10rem; color: #7395d1; opacity: 0.045; }
+  .home-doodle-sparkles { top: 5.2rem; left: 14%; width: 4rem; }
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.home-card-cta {
+  position: relative;
+  display: inline-flex;
+  height: 26px;
+  min-height: 0;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 9px;
+  border-radius: 7px;
+  font-size: 9px;
+  line-height: 1;
+}
+
+button,
+a,
+select {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid #6846FF;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: #ddd6ff;
+  color: #17171c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Safe area for iPhone notch/home indicator */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desktop-feed-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #d8d8e1 transparent;
+    scrollbar-gutter: stable;
+  }
+
+  .desktop-feed-scrollbar::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+  }
+
+  .desktop-feed-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .desktop-feed-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #d8d8e1;
+  }
+
+  .desktop-feed-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #b9b9c5;
+  }
+}
+
+
+/* SVOYA recovery — verified visual language from the original landing/platform screenshots. */
+@keyframes svoyaTicker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-22%); }
+}
+
+.svoya-serif {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
