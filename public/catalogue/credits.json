@@ -1,0 +1,146 @@
+{
+  "art": {
+    "file": "art.webp",
+    "sourceUrl": "https://www.pexels.com/photo/women-doing-pottery-6694314/",
+    "author": "cottonbro studio",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Жінки працюють із глиною на творчій зустрічі.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  },
+  "business": {
+    "file": "business.webp",
+    "sourceUrl": "https://www.pexels.com/photo/women-on-a-meeting-in-an-office-8067833/",
+    "author": "Alena Shekhovtcova",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Жінки обговорюють спільний проєкт за ноутбуком.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  },
+  "city": {
+    "file": "city.webp",
+    "sourceUrl": "https://www.pexels.com/photo/a-woman-standing-in-a-city-18271965/",
+    "author": "Oleksii Piekhov",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Жінка гуляє історичною вулицею Києва на заході сонця.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  },
+  "books": {
+    "file": "books.webp",
+    "sourceUrl": "https://www.pexels.com/photo/cheerful-young-women-sitting-together-with-books-at-table-in-light-room-3884170/",
+    "author": "Andrea Piacquadio",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Учасниці книжкового клубу обговорюють книжки за столом.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  },
+  "coffee": {
+    "file": "coffee.webp",
+    "sourceUrl": "https://www.pexels.com/photo/two-cups-of-coffee-on-a-table-11443453/",
+    "author": "Esra Afşar",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Дві чашки кави на столику в затишній кавʼярні.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.98
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  },
+  "walk": {
+    "file": "walk.webp",
+    "sourceUrl": "https://www.pexels.com/photo/anonymous-women-walking-in-park-5838828/",
+    "author": "Tim Samuel",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Дві подруги неквапливо гуляють осіннім парком.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  },
+  "carpathians": {
+    "file": "carpathians.webp",
+    "sourceUrl": "https://www.pexels.com/photo/stunning-carpathian-mountains-landscape-in-ukraine-33258914/",
+    "author": "Denis Li",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Зелені схили Українських Карпат під блакитним небом.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.55
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  },
+  "beauty": {
+    "file": "beauty.webp",
+    "sourceUrl": "https://www.pexels.com/photo/woman-at-the-salon-3993312/",
+    "author": "cottonbro studio",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Майстриня доглядає за волоссям клієнтки в салоні краси.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  },
+  "help": {
+    "file": "help.webp",
+    "sourceUrl": "https://www.pexels.com/photo/volunteers-packing-clothes-6995066/",
+    "author": "Julia M Cameron",
+    "license": "Pexels License — free website and commercial use, attribution optional",
+    "licenseUrl": "https://www.pexels.com/license/",
+    "alt": "Руки волонтерів складають одяг у коробки для допомоги.",
+    "cropFocus": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "dimensions": [
+      600,
+      600
+    ]
+  }
+}

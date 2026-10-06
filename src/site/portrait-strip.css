@@ -1,0 +1,13 @@
+.portrait-strip{padding:33px 0 35px;background:#f5eee8;border-bottom:1px solid #e7dadc}
+.portrait-strip-heading{padding:0 5%;display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:24px}.sv-home .portrait-strip-heading h2{font:29px/1.2 Georgia,serif;letter-spacing:-.025em}.portrait-strip-heading h2 em{color:#a15370}.portrait-strip-heading p{font-size:12px;color:#927887;margin:7px 0 0}
+.portrait-strip-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex-shrink:0;border:1px solid #d8c3cd;background:#fff9f3;color:#78425c;border-radius:100px;padding:9px 14px;font-size:13px;min-height:40px;cursor:pointer}.portrait-strip-toggle:hover{background:#ecdae2}.portrait-strip-toggle:disabled{cursor:default;opacity:.65}
+.portrait-strip-window{overflow:hidden;mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent);padding:5px 0}
+.portrait-strip-track{display:flex;width:max-content;animation:portrait-strip-scroll 180s linear infinite;will-change:transform}
+.portrait-strip-group{display:flex;gap:12px;padding-right:12px;flex-shrink:0}
+.portrait-strip-frame{width:112px;height:140px;flex:none;border-radius:12px;overflow:hidden;background:#dfcdd4;box-shadow:0 3px 10px #4924370b}
+.portrait-strip-frame:nth-child(4n+2){border-radius:60px 60px 12px 12px}.portrait-strip-frame:nth-child(4n+4){border-radius:12px 12px 60px 60px}
+.portrait-strip-frame img{display:block;width:100%;height:100%;object-fit:cover;user-select:none;filter:saturate(.86);transition:filter .3s}
+@media(hover:hover){.portrait-strip-window:hover .portrait-strip-track{animation-play-state:paused!important}.portrait-strip-frame:hover img{filter:saturate(1)}}
+@keyframes portrait-strip-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(max-width:700px){.portrait-strip{padding:27px 0}.portrait-strip-heading{padding:0 23px;margin-bottom:19px;gap:14px}.sv-home .portrait-strip-heading h2{font-size:25px;max-width:250px}.portrait-strip-toggle{width:40px;padding:8px}.portrait-strip-toggle span{display:none}.portrait-strip-frame{width:92px;height:115px}.portrait-strip-group{gap:9px;padding-right:9px}.portrait-strip-track{animation-duration:160s}.portrait-strip-window{mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent)}}
+@media(prefers-reduced-motion:reduce){.portrait-strip-track{animation:none!important;transform:none!important;will-change:auto}.portrait-strip-window{overflow-x:auto}.portrait-strip-copy{display:none}.portrait-strip-frame img{transition:none}}

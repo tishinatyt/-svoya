@@ -1,98 +1,31 @@
-# SVOYA recovery — source of truth
+# Відновлення СВОЯ — 2026-10-06
 
-This branch restores **the real SVOYA project in source code**, using the last verified Poruch codebase as the technical foundation.
+## Джерело
 
-## Verified source baseline
+Перенесено справжні вихідники опублікованої версії **8** ChatGPT Site `appgprj_6ab259e9d95c8191b36827c585f4c4ef`, commit `faea30490fce12d288cd0dbc60c3e8b4b4f239df`. Візуальне відтворення за скриншотами більше не є джерелом реалізації.
 
-- Repository: `tishinatyt/porooch`
-- Base branch snapshot: `audit/post-production-mobile-logic`
-- Base commit: `1f74e1bffe48a726d952adc305404c1a3835c775`
-- Working recovery branch: `svoya-recovery-20261006`
+До виправлення лендинг на GitHub був неповною реконструкцією; `/club` проходив через `ProtectedRoute` попереднього застосунку й показував онбординг Poruch. Основний продукт замінено оригінальними компонентами СВОЯ, CSS, UI-примітивами та зображеннями.
 
-The base contains the real React + TypeScript + Vite + Supabase implementation for:
-- auth/onboarding;
-- user profiles;
-- profile gallery;
-- event creation/editing;
-- event discovery;
-- join/approval flow;
-- My Events;
-- event chat;
-- unread message state;
-- PWA / GitHub Pages routing;
-- migrations and RLS.
+## Адаптація
 
-## Original SVOYA references
+- Next/Vinext layout замінено Vite HTML-входом; клієнтський код платформи збережено.
+- Усі локальні посилання, картинки, адреси поширення й service worker враховують `/-svoya/`.
+- Збірка містить `club/index.html`, тому пряма адреса клубу не потребує 404-переходу.
+- Manifest і переходи push залишаються у межах цього проєкту.
+- Старий `sw.js` оновлює попередні встановлення; новий worker не кешує приватні сторінки чи API.
+- Відновлено фотографії лендингу, 50 портретів і 9 тематичних фото каталогу.
+- Використано первинні `svoya_*` таблиці, правила доступу, сховище фото та сесію `svoya-club-auth`.
+- `svoya-push` версії 2 додає точний GitHub origin у CORS, зберігаючи старий домен та перевірку закритого webhook для відправлення.
 
-- Landing: https://svoya-women-club.dr12071980.chatgpt.site/
-- Club platform: https://svoya-women-club.dr12071980.chatgpt.site/club?section=event
-- ChatGPT Site project id: `appgprj_6ab259e9d95c8191b36827c585f4c4ef`
-- Site source version observed: `8`
-- Site projection revision observed: `16`
+## Перевірка
 
-## Confirmed product architecture
+- TypeScript та production-збірка.
+- Автоматичні перевірки URL, переходів з push, відмови стороннім адресам, ізоляції від Poruch.
+- Візуальне порівняння стартової сторінки та клубу з оригіналом.
+- Категорії, пошук, картки, прямі посилання, правила та гостьові сповіщення.
+- Живий API каталогу, налаштування авторизації та публічний ключ push.
+- CORS обох дозволених доменів.
 
-`/` is the public preview/landing.
+Реальні входи користувачок, зміна їхніх профілів та фактична доставка системного push не виконувалися під час перенесення. Серверні таблиці й правила доступу не змінювалися; перенесено чинну логіку оригіналу.
 
-`/club` is the actual communication platform. It uses query sections:
-- `?section=feed` — Стрічка
-- `?section=event` — Події
-- `?section=circle` — Свої кола
-- `?section=beauty` — Б’юті
-- `?section=business` — Бізнес
-- `?section=help` — Допомога
-
-Existing Poruch source routes remain the implementation base for:
-- `/create`
-- `/event/:id`
-- `/event/:id/edit`
-- `/event/:id/chat`
-- `/my-events`
-- `/chats`
-- `/profile`
-
-## Recovery rule
-
-Do **not** invent missing SVOYA screens.
-
-Only implement a screen when at least one of the following exists:
-1. an original screenshot/reference;
-2. source code from the original implementation;
-3. captured HAR/assets from the live SVOYA Site;
-4. a verified Poruch feature that SVOYA explicitly inherited.
-
-If a section is not yet verified, keep the route and shell in source code but mark its content as pending reference recovery rather than fabricating UI.
-
-## Current verified visual references
-
-1. Public landing screenshot supplied 2026-10-06.
-2. Club feed/platform screenshot supplied 2026-10-06.
-3. Events screen supplied 2026-10-06:
-   - title: "Зустрінемося?"
-   - filters: Усі / Кава та розмови / Творчість / Прогулянки / Спорт / Розвиток
-   - 3 inspiration cards.
-4. Circles screen supplied 2026-10-06:
-   - title: "Свої люди. Надовго."
-   - filters: Усі / Книги / Підприємництво / Моє місто / Творчість / Спорт
-   - 3 inspiration cards.
-5. Beauty screen supplied 2026-10-06:
-   - title: "Час подбати про себе."
-   - community-offer empty state + safety note.
-6. Business screen supplied 2026-10-06:
-   - title: "Свою справу легше разом."
-   - community-offer empty state.
-7. Help screen supplied 2026-10-06:
-   - title: "Можна попросити. Можна допомогти."
-   - community-offer empty state.
-
-All verified screens are implemented as React/TypeScript source. Screenshots are references only, never the application artifact.
-
-## Still not verified
-
-The exact original composer forms opened by:
-- "Створити коло"
-- Beauty "Додати пропозицію / Створити публікацію"
-- Business "Додати пропозицію / Створити публікацію"
-- Help "Додати пропозицію / Створити публікацію"
-
-These flows must not be invented. Recover from original screenshots, HAR/assets or original source before marking them complete.
+Перевірку POST-відправлення не виконано: автоматична перевірка дозволів відхилила її через можливий зовнішній ефект. Використано лише GET-перевірки; перевірка закритого webhook збережена у вихідниках.

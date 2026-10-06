@@ -2,82 +2,34 @@
 <html lang="uk">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
-    <link rel="apple-touch-icon" sizes="192x192" href="%BASE_URL%icons/icon-192.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#8D2F51" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>СВОЯ — знайди своє коло</title>
+    <meta name="description" content="Жіночий клуб СВОЯ: подруги, зустрічі та спільні враження." />
+    <meta name="theme-color" content="#552338" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="application-name" content="СВОЯ" />
     <meta name="apple-mobile-web-app-title" content="СВОЯ" />
-
-    <title>СВОЯ — жіночий клуб</title>
-    <meta name="description" content="СВОЯ — жіночий клуб для живих знайомств, зустрічей, своїх кіл, б’юті, бізнесу та взаємопідтримки." />
-    <meta name="robots" content="index,follow,max-image-preview:large" />
-    <link rel="canonical" href="https://tishinatyt.github.io/startai/svoya/" />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="uk_UA" />
-    <meta property="og:site_name" content="СВОЯ" />
-    <meta property="og:title" content="СВОЯ — жіночий клуб" />
-    <meta property="og:description" content="Знаходь людей і події поруч, створюй зустрічі та збирай компанію за спільними інтересами." />
-    <meta property="og:url" content="https://tishinatyt.github.io/startai/svoya/" />
-    <meta property="og:image" content="https://tishinatyt.github.io/startai/svoya/favicon.svg" />
-    <meta property="og:image:alt" content="Логотип СВОЯ" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="СВОЯ — жіночий клуб" />
-    <meta name="twitter:description" content="Знаходь людей і події поруч, створюй зустрічі та збирай компанію за спільними інтересами." />
-    <meta name="twitter:image" content="https://tishinatyt.github.io/startai/svoya/favicon.svg" />
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "СВОЯ",
-        "url": "https://tishinatyt.github.io/startai/svoya/",
-        "applicationCategory": "SocialNetworkingApplication",
-        "operatingSystem": "Web",
-        "inLanguage": "uk",
-        "description": "Сервіс для жіночого клубу: зустрічі, свої кола, б’юті, бізнес і взаємопідтримка.",
-        "image": "https://tishinatyt.github.io/startai/svoya/favicon.svg"
-      }
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="apple-touch-icon" href="%BASE_URL%svoya-icon-192.png" />
+    <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
+    <link rel="canonical" href="https://tishinatyt.github.io/-svoya/" />
     <script>
-      // Restore deep-link path after SPA redirect from 404.html.
-      // 404.html stores the full path (including /-svoya prefix); restore it as-is.
-      // BrowserRouter uses Vite's BASE_URL, so no manual prefix stripping is needed.
-      (function() {
-        var appBase = '%BASE_URL%';
-        var redirect = null;
-
+      // Restore legacy or fallback deep links within this project only.
+      (function () {
+        var base = '%BASE_URL%';
+        var params = new URLSearchParams(location.search);
+        var redirect = params.get('__svoya_route');
         try {
-          redirect = sessionStorage.getItem('svoya:redirect');
+          redirect = redirect || sessionStorage.getItem('svoya:redirect');
           sessionStorage.removeItem('svoya:redirect');
-          // Remove the legacy key so an older /meetnow/ redirect cannot be restored.
-          sessionStorage.removeItem('redirect');
-        } catch (_) {
-          // Storage can be unavailable in restricted standalone contexts.
-        }
-
-        if (redirect) {
-          try {
-            var target = new URL(redirect, window.location.origin);
-            if (target.origin === window.location.origin && target.pathname.indexOf(appBase) === 0) {
-              window.history.replaceState(null, '', target.pathname + target.search + target.hash);
-            }
-          } catch (_) {
-            // Ignore malformed or stale redirects and launch at the app root.
+        } catch (_) {}
+        if (!redirect) return;
+        try {
+          var target = new URL(redirect, location.origin);
+          if (target.origin === location.origin && target.pathname.startsWith(base)) {
+            history.replaceState(null, '', target.pathname + target.search + target.hash);
           }
-        }
-
-        if (window.location.pathname.indexOf(appBase) !== 0) {
-          window.history.replaceState(null, '', appBase);
-        }
+        } catch (_) {}
       })();
     </script>
   </head>
