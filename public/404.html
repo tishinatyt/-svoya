@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
   <head>
     <meta charset="utf-8" />
-    <title>Poruch</title>
+    <title>СВОЯ</title>
     <script>
-      // SPA redirect for GitHub Pages
-      // Saves the full path+query+hash to sessionStorage, then redirects to app root.
-      // BrowserRouter uses the /porooch project base, so no prefix stripping is needed.
-      var l = window.location;
-      if (l.pathname.indexOf('/porooch/') === 0) {
+      (function () {
+        var l = window.location;
+        var marker = '/-svoya/';
+        var index = l.pathname.indexOf(marker);
+        var base = index >= 0 ? l.pathname.slice(0, index + marker.length) : '/-svoya/';
         try {
-          sessionStorage.setItem('porooch:redirect', l.pathname + l.search + l.hash);
-        } catch (_) {
-          // Continue to the app root when storage is unavailable.
-        }
-      }
-      l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/porooch/');
+          sessionStorage.setItem('svoya:redirect', l.pathname + l.search + l.hash);
+        } catch (_) {}
+        l.replace(l.protocol + '//' + l.host + base);
+      })();
     </script>
   </head>
   <body></body>
