@@ -2,7 +2,7 @@ name: SVOYA CI
 
 on:
   push:
-    branches: [main, recovery/source-20261006]
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -28,3 +28,14 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_BASE_PATH: /startai/svoya/
+
+      - name: Upload deployable dist
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: svoya-pages-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
