@@ -4,7 +4,13 @@ import {useEffect,useRef,useState} from 'react';
 import {Pause,Play} from 'lucide-react';
 import './portrait-strip.css';
 
-const portraits=Array.from({length:50},(_,i)=>siteUrl(`/portraits/portrait-${String((i%5)*10+Math.floor(i/5)+1).padStart(2,'0')}.webp`));
+const replacedPortraits=new Set([10,13,26,28,32,33,38,45]);
+const portraits=Array.from({length:50},(_,i)=>{
+ const number=(i%5)*10+Math.floor(i/5)+1;
+ // Refresh only the selected photos for returning visitors.
+ const revision=replacedPortraits.has(number)?'?v=20261007-selected':'';
+ return siteUrl(`/portraits/portrait-${String(number).padStart(2,'0')}.webp${revision}`);
+});
 
 export default function PortraitStrip(){
  const root=useRef<HTMLElement>(null);

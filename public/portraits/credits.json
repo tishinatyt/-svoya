@@ -202,10 +202,10 @@
     },
     {
       "file": "portrait-10.webp",
-      "sourceUrl": "https://www.pexels.com/photo/smiling-woman-portrait-15324080/",
-      "sourceImageUrl": "https://images.pexels.com/photos/15324080/pexels-photo-15324080.jpeg",
-      "photoId": 15324080,
-      "author": "Duren Williams",
+      "sourceUrl": "https://www.pexels.com/photo/focus-photo-of-woman-smiling-1310446/",
+      "sourceImageUrl": "https://images.pexels.com/photos/1310446/pexels-photo-1310446.jpeg",
+      "photoId": 1310446,
+      "author": "George Dolgikh",
       "license": "Pexels License — free commercial website use; no implied endorsement",
       "licenseUrl": "https://www.pexels.com/license/",
       "alt": "Ілюстративний портрет жінки",
@@ -213,10 +213,16 @@
         200,
         250
       ],
-      "bytes": 5262,
-      "sourceCropBox": null,
-      "sourceCandidate": 12,
-      "sha256": "310d201b5ebd6a60132249eb8c9db9c22b9e5b6b448dac2020d4b4c96a352a5b"
+      "bytes": 5714,
+      "sourceCropBox": [
+        190,
+        15,
+        510,
+        415
+      ],
+      "sourceCropReference": "Source downloaded at width 640px; crop and size conversion only.",
+      "updatedAt": "2026-10-07",
+      "sha256": "458628da0bf195a58cdeb0c880cfca51cdd36a80653b5b9935d4ed078829a67f"
     },
     {
       "file": "portrait-11.webp",
@@ -266,10 +272,10 @@
     },
     {
       "file": "portrait-13.webp",
-      "sourceUrl": "https://www.pexels.com/photo/portrait-photo-of-woman-smiling-2362887/",
-      "sourceImageUrl": "https://images.pexels.com/photos/2362887/pexels-photo-2362887.jpeg",
-      "photoId": 2362887,
-      "author": "nappy",
+      "sourceUrl": "https://www.pexels.com/photo/woman-holding-cherries-in-hand-11696933/",
+      "sourceImageUrl": "https://images.pexels.com/photos/11696933/pexels-photo-11696933.jpeg",
+      "photoId": 11696933,
+      "author": "Anna Shevchuk",
       "license": "Pexels License — free commercial website use; no implied endorsement",
       "licenseUrl": "https://www.pexels.com/license/",
       "alt": "Ілюстративний портрет жінки",
@@ -277,15 +283,16 @@
         200,
         250
       ],
-      "bytes": 9328,
+      "bytes": 5864,
       "sourceCropBox": [
-        228,
-        34,
-        516,
-        394
+        0,
+        0,
+        640,
+        800
       ],
-      "sourceCandidate": 15,
-      "sha256": "8e61c1c30ec861bfc31202e4d3a239ec2c58e71ed5b9a2a0fe6c7e75b1944933"
+      "sourceCropReference": "Source downloaded at width 640px; crop and size conversion only.",
+      "updatedAt": "2026-10-07",
+      "sha256": "5724f8e4afb111c41ac8f5d3a8c1f71234ae169c63c251a46eef91888f955ff3"
     },
     {
       "file": "portrait-14.webp",
@@ -540,10 +547,10 @@
     },
     {
       "file": "portrait-26.webp",
-      "sourceUrl": "https://www.pexels.com/photo/portrait-of-a-woman-smiling-16152597/",
-      "sourceImageUrl": "https://images.pexels.com/photos/16152597/pexels-photo-16152597.jpeg",
-      "photoId": 16152597,
-      "author": "Korede Adenola",
+      "sourceUrl": "https://www.pexels.com/photo/cozy-winter-portrait-of-a-woman-in-ukraine-30223986/",
+      "sourceImageUrl": "https://images.pexels.com/photos/30223986/pexels-photo-30223986.jpeg",
+      "photoId": 30223986,
+      "author": "Roman Tymochko",
       "license": "Pexels License — free commercial website use; no implied endorsement",
       "licenseUrl": "https://www.pexels.com/license/",
       "alt": "Ілюстративний портрет жінки",
@@ -551,15 +558,16 @@
         200,
         250
       ],
-      "bytes": 4042,
+      "bytes": 4308,
       "sourceCropBox": [
-        30,
-        123,
-        570,
-        798
+        20,
+        100,
+        500,
+        700
       ],
-      "sourceCandidate": 29,
-      "sha256": "4c5cd42c5aa2cc9a7d058185f47b450cb63919afc6e344bbb9b593aed0e11563"
+      "sourceCropReference": "Source downloaded at width 640px; crop and size conversion only.",
+      "updatedAt": "2026-10-07",
+      "sha256": "d389ebcd4c2e3197cb26bc3f1c72321f7c250ecbb49d8af389e5d44001561d23"
     },
     {
       "file": "portrait-27.webp",
@@ -586,10 +594,10 @@
     },
     {
       "file": "portrait-28.webp",
-      "sourceUrl": "https://www.pexels.com/photo/elegant-portrait-of-a-woman-with-glasses-34156728/",
-      "sourceImageUrl": "https://images.pexels.com/photos/34156728/pexels-photo-34156728.jpeg",
-      "photoId": 34156728,
-      "author": "ks concept",
+      "sourceUrl": "https://www.pexels.com/photo/a-woman-wearing-an-off-shoulder-top-7433684/",
+      "sourceImageUrl": "https://images.pexels.com/photos/7433684/pexels-photo-7433684.jpeg",
+      "photoId": 7433684,
+      "author": "Maryia Plashchynskaya",
       "license": "Pexels License — free commercial website use; no implied endorsement",
       "licenseUrl": "https://www.pexels.com/license/",
       "alt": "Ілюстративний портрет жінки",
@@ -597,15 +605,16 @@
         200,
         250
       ],
-      "bytes": 5044,
+      "bytes": 4152,
       "sourceCropBox": [
-        63,
-        144,
-        453,
-        631
+        40,
+        90,
+        600,
+        790
       ],
-      "sourceCandidate": 31,
-      "sha256": "6f6eac7800c967e38349ca97babca4587a8227814d13f75de508468b54dccaf4"
+      "sourceCropReference": "Source downloaded at width 640px; crop and size conversion only.",
+      "updatedAt": "2026-10-07",
+      "sha256": "77f6aa44ee2791b6f5e59a7a28694e07c2a0955a4337b55b1d68963ee3c8f770"
     },
     {
       "file": "portrait-29.webp",
@@ -673,10 +682,10 @@
     },
     {
       "file": "portrait-32.webp",
-      "sourceUrl": "https://www.pexels.com/photo/portrait-of-a-woman-wearing-glasses-4972194/",
-      "sourceImageUrl": "https://images.pexels.com/photos/4972194/pexels-photo-4972194.jpeg",
-      "photoId": 4972194,
-      "author": "Gustavo Fring",
+      "sourceUrl": "https://www.pexels.com/photo/middle-aged-woman-in-glasses-using-cellphone-5257219/",
+      "sourceImageUrl": "https://images.pexels.com/photos/5257219/pexels-photo-5257219.jpeg",
+      "photoId": 5257219,
+      "author": "Anna Shvets",
       "license": "Pexels License — free commercial website use; no implied endorsement",
       "licenseUrl": "https://www.pexels.com/license/",
       "alt": "Ілюстративний портрет жінки",
@@ -684,22 +693,23 @@
         200,
         250
       ],
-      "bytes": 5506,
+      "bytes": 5152,
       "sourceCropBox": [
-        234,
+        160,
         0,
-        498,
-        330
+        480,
+        400
       ],
-      "sourceCandidate": 35,
-      "sha256": "e2b9c38152e1b9a3417fcd622015fec4330c3c4d200f92c2b95f0370ce5ed267"
+      "sourceCropReference": "Source downloaded at width 640px; crop and size conversion only.",
+      "updatedAt": "2026-10-07",
+      "sha256": "22f570115de4da572adcac0bd8dadf16bcf3500374d264339d98a7bf9fe14104"
     },
     {
       "file": "portrait-33.webp",
-      "sourceUrl": "https://www.pexels.com/photo/close-up-portrait-of-a-woman-with-glasses-32887096/",
-      "sourceImageUrl": "https://images.pexels.com/photos/32887096/pexels-photo-32887096.jpeg",
-      "photoId": 32887096,
-      "author": "MarrionGallerie HOUNWANOU",
+      "sourceUrl": "https://www.pexels.com/photo/professional-woman-wearing-eyeglasses-7959650/",
+      "sourceImageUrl": "https://images.pexels.com/photos/7959650/pexels-photo-7959650.jpeg",
+      "photoId": 7959650,
+      "author": "Darina Belonogova",
       "license": "Pexels License — free commercial website use; no implied endorsement",
       "licenseUrl": "https://www.pexels.com/license/",
       "alt": "Ілюстративний портрет жінки",
@@ -707,10 +717,16 @@
         200,
         250
       ],
-      "bytes": 8330,
-      "sourceCropBox": null,
-      "sourceCandidate": 36,
-      "sha256": "0242a435edc120dcbbde48cc343c5e804cf3497b3cbc9a11b93376052373b48d"
+      "bytes": 4094,
+      "sourceCropBox": [
+        0,
+        110,
+        600,
+        860
+      ],
+      "sourceCropReference": "Source downloaded at width 640px; crop and size conversion only.",
+      "updatedAt": "2026-10-07",
+      "sha256": "3aab7130b3de999cd613abc6c97498cf3bfe20ad994f3d5c6ab8d4f7e0372b74"
     },
     {
       "file": "portrait-34.webp",
@@ -806,10 +822,10 @@
     },
     {
       "file": "portrait-38.webp",
-      "sourceUrl": "https://www.pexels.com/photo/beautiful-middel-aged-woman-7155478/",
-      "sourceImageUrl": "https://images.pexels.com/photos/7155478/pexels-photo-7155478.jpeg",
-      "photoId": 7155478,
-      "author": "Khalid aljmman",
+      "sourceUrl": "https://www.pexels.com/photo/portrait-of-a-happy-woman-7342417/",
+      "sourceImageUrl": "https://images.pexels.com/photos/7342417/pexels-photo-7342417.jpeg",
+      "photoId": 7342417,
+      "author": "Alexander Krivitskiy",
       "license": "Pexels License — free commercial website use; no implied endorsement",
       "licenseUrl": "https://www.pexels.com/license/",
       "alt": "Ілюстративний портрет жінки",
@@ -817,15 +833,16 @@
         200,
         250
       ],
-      "bytes": 11010,
+      "bytes": 3568,
       "sourceCropBox": [
-        255,
-        40,
-        501,
-        347
+        0,
+        150,
+        640,
+        950
       ],
-      "sourceCandidate": 41,
-      "sha256": "e3635d3e9eaa1d3d8ac1a392a6d3048c0c99d8e4f53d067d5399fc960fd05cac"
+      "sourceCropReference": "Source downloaded at width 640px; crop and size conversion only.",
+      "updatedAt": "2026-10-07",
+      "sha256": "7b201361c179bf18a24940a90b23373592f2847b052023995fbdd865333c2c53"
     },
     {
       "file": "portrait-39.webp",
@@ -962,10 +979,10 @@
     },
     {
       "file": "portrait-45.webp",
-      "sourceUrl": "https://www.pexels.com/photo/portrait-of-a-woman-smiling-15026471/",
-      "sourceImageUrl": "https://images.pexels.com/photos/15026471/pexels-photo-15026471.jpeg",
-      "photoId": 15026471,
-      "author": "Alimurat Üral",
+      "sourceUrl": "https://www.pexels.com/photo/portrait-of-an-elderly-woman-6527101/",
+      "sourceImageUrl": "https://images.pexels.com/photos/6527101/pexels-photo-6527101.jpeg",
+      "photoId": 6527101,
+      "author": "Lubomir Satko",
       "license": "Pexels License — free commercial website use; no implied endorsement",
       "licenseUrl": "https://www.pexels.com/license/",
       "alt": "Ілюстративний портрет жінки",
@@ -973,10 +990,16 @@
         200,
         250
       ],
-      "bytes": 5754,
-      "sourceCropBox": null,
-      "sourceCandidate": 48,
-      "sha256": "33ea439af71192e9a31b5489ec426755b9c0e9ca6d0bb2b6587c758ddad23b6b"
+      "bytes": 5426,
+      "sourceCropBox": [
+        0,
+        160,
+        640,
+        960
+      ],
+      "sourceCropReference": "Source downloaded at width 640px; crop and size conversion only.",
+      "updatedAt": "2026-10-07",
+      "sha256": "88d51ab017b0fea7ba92067c75caa1380314fcc4012e92ded74ffd67ad54140b"
     },
     {
       "file": "portrait-46.webp",
