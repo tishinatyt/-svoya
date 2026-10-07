@@ -6,8 +6,8 @@
 .portrait-strip-group{display:flex;gap:12px;padding-right:12px;flex-shrink:0}
 .portrait-strip-frame{width:112px;height:140px;flex:none;border-radius:12px;overflow:hidden;background:#dfcdd4;box-shadow:0 3px 10px #4924370b}
 .portrait-strip-frame:nth-child(4n+2){border-radius:60px 60px 12px 12px}.portrait-strip-frame:nth-child(4n+4){border-radius:12px 12px 60px 60px}
-.portrait-strip-image{display:block;width:100%;height:100%;background-size:1000% 500%;background-repeat:no-repeat;user-select:none;filter:saturate(.86);transition:filter .3s}
-@media(hover:hover){.portrait-strip-window:hover .portrait-strip-track{animation-play-state:paused!important}.portrait-strip-frame:hover .portrait-strip-image{filter:saturate(1)}}
+.portrait-strip-frame img{display:block;width:100%;height:100%;object-fit:cover;user-select:none;filter:saturate(.86);transition:filter .3s}
+@media(hover:hover){.portrait-strip-window:hover .portrait-strip-track{animation-play-state:paused!important}.portrait-strip-frame:hover img{filter:saturate(1)}}
 @keyframes portrait-strip-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(max-width:700px){.portrait-strip{padding:27px 0}.portrait-strip-heading{padding:0 23px;margin-bottom:19px;gap:14px}.sv-home .portrait-strip-heading h2{font-size:25px;max-width:250px}.portrait-strip-toggle{width:40px;padding:8px}.portrait-strip-toggle span{display:none}.portrait-strip-frame{width:92px;height:115px}.portrait-strip-group{gap:9px;padding-right:9px}.portrait-strip-track{animation-duration:160s}.portrait-strip-window{mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent)}}
-@media(prefers-reduced-motion:reduce){.portrait-strip-track{animation:none!important;transform:none!important;will-change:auto}.portrait-strip-window{overflow-x:auto}.portrait-strip-copy{display:none}.portrait-strip-image{transition:none}}
+@media(prefers-reduced-motion:reduce){.portrait-strip-track{animation:none!important;transform:none!important;will-change:auto}.portrait-strip-window{overflow-x:auto}.portrait-strip-copy{display:none}.portrait-strip-frame img{transition:none}}
