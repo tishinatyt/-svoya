@@ -19,7 +19,7 @@ Deno.serve(async(req:Request)=>{
  try{
   const list=await db.from('svoya_push_subscriptions').select('*').eq('user_id',n.user_id);if(list.error)throw new Error('Subscriptions unavailable');
   if(!list.data.length){await db.from('svoya_notifications').update({push_status:'none'}).eq('id',id);return json({status:'no subscribers'});}
-  const payload=JSON.stringify({title:'СВОЯ · '+n.title,body:n.kind==='chat'?'У твоєму колі є нове повідомлення. Відкрий клуб, щоб прочитати.':'Відкрий клуб, щоб переглянути подробиці.',tag:n.kind==='chat'?'chat-'+n.entry_id:n.id,url:'/club?entry='+encodeURIComponent(n.entry_id??'')+'&notification='+n.id});
+  const payload=JSON.stringify({title:'СВОЯ · '+n.title,body:n.kind==='chat'?'У твоєму колі є нове повідомлення. Відкрий клуб, щоб прочитати.':'Відкрий клуб, щоб переглянути подробиці.',tag:n.kind==='chat'?'chat-'+n.entry_id:n.id,url:(typeof n.link_path==='string'&&/^\/club\?section=(discover|profile)$/.test(n.link_path)?n.link_path:'/club?entry='+encodeURIComponent(n.entry_id??''))+'&notification='+n.id});
   let sent=0,retry=false;
   for(const sub of list.data){
    if(!trustedEndpoint(sub.endpoint)){await db.from('svoya_push_subscriptions').delete().eq('id',sub.id);continue;}

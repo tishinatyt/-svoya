@@ -1,20 +1,336 @@
-import {siteUrl} from '@/lib/site-path';
-import {Coffee,Heart,HeartHandshake,Flower2,BriefcaseBusiness,Users,Plus} from 'lucide-react';
-import './home.css';
-import HomeMotion from './home-motion';
-import PortraitStrip from './portrait-strip';
-import Brand from './brand';
-import './home-brand.css';
-const paths=[{n:'01',title:'Зустрітися',text:'Кава, прогулянки та маленькі пригоди. Знайди привід вийти з дому.',icon:Coffee,href:'event'},{n:'02',title:'Знайти своїх',text:'Книги, творчість, спорт. Твоє коло людей зі спільними інтересами.',icon:Users,href:'circle'},{n:'03',title:'Подбати про себе',text:'Б’юті-послуги від учасниць клубу. Знайомся з майстринями поруч.',icon:Flower2,href:'beauty'},{n:'04',title:'Зростати разом',text:'Власна справа, партнерства й досвід, яким хочеться поділитися.',icon:BriefcaseBusiness,href:'business'},{n:'05',title:'Бути підтримкою',text:'Попросити про допомогу. Відгукнутися. Відчути, що ти не сама.',icon:HeartHandshake,href:'help'}];
-export default function Home(){return <HomeMotion>
-<header className="home-header"><Brand className="home-brand"/><nav aria-label="Головна навігація"><a href="#about">Про нас</a><a href="#formats">Що нас об’єднує</a><a href="#first-step">Як долучитися</a></nav><a className="home-button home-button-dark" href={siteUrl("/club")}>Увійти до клубу</a></header>
-<main>
-<section className="home-hero" aria-labelledby="home-title"><div className="home-hero-copy"><p className="home-kicker"><strong>Жіночий клуб у Чернігові</strong><span>Для знайомств, дружби та спільних справ · 18+</span></p><h1 id="home-title"><span className="home-title-line"><span>Подруги.</span></span><span className="home-title-line"><span>Спільні плани.</span></span><span className="home-title-line"><span><em>Своє коло.</em></span></span></h1><div className="home-hero-bottom"><p>Знайомся з жінками у своєму місті. Кава після роботи, прогулянка у вихідні, підтримка для себе та своєї справи.</p><div><a className="home-button home-button-dark" href={siteUrl("/club")}>Знайти своє коло</a><span className="home-small-note">Можна прийти самій.</span></div></div></div><div className="home-hero-photo"><img src={siteUrl("/svoya-coffee-v2.png")} alt="Жінки знайомляться й розмовляють за кавою" fetchPriority="high"/><span className="home-photo-label"><Coffee size={17}/>Знайомство починається з кави</span><span className="home-photo-index">01 / СВОЇ МОМЕНТИ</span></div></section>
-<div className="home-ribbon" aria-label="Що є у клубі"><span>Подруги у твоєму місті</span><span>Зустрічі та спільні плани</span><span>Жіноча підтримка</span></div>
-<PortraitStrip/>
-<section className="home-intro home-section" id="about"><p className="home-kicker">ЦЕ І Є «СВОЯ»</p><div><h2>Дорослій дружбі<br/>теж потрібне <em>місце.</em></h2><p>Ми можемо жити на сусідніх вулицях і так і не зустрітися. «СВОЯ» — жіночий клуб, який допомагає зробити цей перший крок.</p><p>Знайомитися без незручних приводів. Пробувати нове разом. Знаходити підтримку для себе та своєї справи.</p></div><div className="home-intro-aside"><span>Без потреби<br/>бути ідеальною.</span><Heart strokeWidth={1.2}/><p>Достатньо бути собою<br/>і мати бажання зустрітися.</p></div></section>
-<section className="home-moments home-section" id="formats"><div className="home-section-title"><div><p className="home-kicker">НЕВЕЛИКІ ПЛАНИ. СПРАВЖНІ ЗНАЙОМСТВА.</p><h2>З чого почнеться<br/><em>твоя історія?</em></h2></div><p>Обирай те, що відгукується.<br/>Або запропонуй щось своє.</p></div><div className="home-moments-grid"><a href={siteUrl("/club?section=event")} className="home-moment home-moment-walk"><div className="home-moment-image"><img src={siteUrl("/svoya-walk.webp")} alt="Подруги спілкуються на прогулянці в осінньому парку" loading="lazy"/><span>01 / ЗМІНИТИ МАРШРУТ</span></div><div className="home-moment-text"><h3>Вийти на прогулянку.<br/>Залишитися на розмову.</h3><p>Звичайний день, нове знайомство і місто, яке стає трохи ближчим.</p></div></a><a href={siteUrl("/club?section=event")} className="home-moment home-moment-create"><div className="home-moment-image"><img src={siteUrl("/svoya-ceramics.webp")} alt="Творча зустріч жінок у керамічній майстерні" loading="lazy"/><span>02 / СПРОБУВАТИ РАЗОМ</span></div><div className="home-moment-text"><h3>Щось нове —<br/>у хорошій компанії.</h3><p>Творчість, майстерки, виставки. Не обов’язково вміти — можна просто спробувати.</p></div></a><a href={siteUrl("/club?section=circle")} className="home-moment-quote"><span className="home-kicker">03 / ЗУСТРІТИСЯ ЗНОВУ</span><Users size={38} strokeWidth={1.2}/><h3>«На тому ж місці,<br/><em>наступної суботи?»</em></h3><p>Коло за інтересами, спільний чат і наступна зустріч, на яку чекаєш.</p><span className="home-text-link">Знайти своє коло</span></a></div><p className="home-formats-note">Це ідеї для зустрічей. Актуальні дати та умови — у публікаціях клубу.</p></section>
-<section className="home-world" aria-labelledby="world-title"><div className="home-world-intro"><p className="home-kicker">ОДИН КЛУБ. РІЗНІ СТОРОНИ ТЕБЕ.</p><h2 id="world-title">Ти — більше,<br/>ніж одна <em>роль.</em></h2><p>Тут є місце і відпочинку, і твоїй справі. І бажанню подбати про себе, і можливості підтримати іншу.</p><a className="home-button home-button-light" href={siteUrl("/club")}>Відкрити клуб</a></div><div className="home-paths">{paths.map(p=><a key={p.n} href={siteUrl(`/club?section=${p.href}`)}><span className="home-path-number">{p.n}</span><p.icon size={25} strokeWidth={1.3}/><div><h3>{p.title}</h3><p>{p.text}</p></div><Plus size={22}/></a>)}</div></section>
-<section className="home-first home-section" id="first-step"><div className="home-section-title"><div><p className="home-kicker">НЕ ТРЕБА ОСОБЛИВОГО ПРИВОДУ</p><h2>Перший крок —<br/><em>познайомитися.</em></h2></div><a className="home-button home-button-dark" href={siteUrl("/club?section=profile")}>Створити профіль</a></div><div className="home-steps"><article><span>01</span><h3>Покажи себе</h3><p>Додай фото, місто та кілька слів про те, що любиш.</p></article><article><span>02</span><h3>Знайди, що відгукується</h3><p>Обери зустріч, коло чи пропозицію учасниці. Залиши заявку.</p></article><article><span>03</span><h3>Домовтеся про зустріч</h3><p>Дочекайся підтвердження. Узгодьте деталі й побачтеся наживо.</p></article></div></section>
-<section className="home-final"><span className="home-kicker">СВОЇ ЛЮДИ НЕ ЗАВЖДИ ЗНАХОДЯТЬСЯ САМІ.</span><h2>Іноді достатньо<br/>сказати <em>«привіт».</em></h2><a className="home-button home-button-dark" href={siteUrl("/club")}>Я з вами</a><span className="home-final-note">СВОЯ · жіночий клуб · 18+</span></section>
-</main><footer className="home-footer"><Brand className="home-brand"/><p>Знайомства, які продовжуються.</p><div><a href="#about">Про клуб</a><a href={siteUrl("/club")}>До спільноти</a></div></footer></HomeMotion>}
+import { siteUrl } from "@/lib/site-path";
+import {
+  Coffee,
+  Heart,
+  HeartHandshake,
+  Flower2,
+  BriefcaseBusiness,
+  Users,
+  Plus,
+} from "lucide-react";
+import "./home.css";
+import HomeMotion from "./home-motion";
+import PortraitStrip from "./portrait-strip";
+import Brand from "./brand";
+import LandingLive from "./landing-live";
+import "./home-brand.css";
+const paths = [
+  {
+    n: "01",
+    title: "Зустрітися",
+    text: "Кава, прогулянки та маленькі пригоди. Знайди привід вийти з дому.",
+    icon: Coffee,
+    href: "event",
+  },
+  {
+    n: "02",
+    title: "Знайти своїх",
+    text: "Книги, творчість, спорт. Твоє коло людей зі спільними інтересами.",
+    icon: Users,
+    href: "circle",
+  },
+  {
+    n: "03",
+    title: "Подбати про себе",
+    text: "Б’юті-послуги від учасниць клубу. Знайомся з майстринями поруч.",
+    icon: Flower2,
+    href: "beauty",
+  },
+  {
+    n: "04",
+    title: "Зростати разом",
+    text: "Власна справа, партнерства й досвід, яким хочеться поділитися.",
+    icon: BriefcaseBusiness,
+    href: "business",
+  },
+  {
+    n: "05",
+    title: "Бути підтримкою",
+    text: "Попросити про допомогу. Відгукнутися. Відчути, що ти не сама.",
+    icon: HeartHandshake,
+    href: "help",
+  },
+];
+export default function Home() {
+  return (
+    <HomeMotion>
+      <header className="home-header">
+        <Brand className="home-brand" />
+        <nav aria-label="Головна навігація">
+          <a href="#about">Про нас</a>
+          <a href="#formats">Що нас об’єднує</a>
+          <a href="#first-step">Як долучитися</a>
+        </nav>
+        <a className="home-button home-button-dark" href={siteUrl("/club")}>
+          Увійти до клубу
+        </a>
+      </header>
+      <main>
+        <section className="home-hero" aria-labelledby="home-title">
+          <div className="home-hero-copy">
+            <p className="home-kicker">
+              <strong>Жіночий клуб у Чернігові</strong>
+              <span>Для знайомств, дружби та спільних справ · 18+</span>
+            </p>
+            <h1 id="home-title">
+              <span className="home-title-line">
+                <span>Подруги.</span>
+              </span>
+              <span className="home-title-line">
+                <span>Спільні плани.</span>
+              </span>
+              <span className="home-title-line">
+                <span>
+                  <em>Своє коло.</em>
+                </span>
+              </span>
+            </h1>
+            <div className="home-hero-bottom">
+              <p>
+                Знайомся з жінками у своєму місті. Кава після роботи, прогулянка
+                у вихідні, підтримка для себе та своєї справи.
+              </p>
+              <div>
+                <a
+                  className="home-button home-button-dark"
+                  href={siteUrl("/club")}
+                >
+                  Знайти своє коло
+                </a>
+                <span className="home-small-note">Можна прийти самій.</span>
+              </div>
+            </div>
+          </div>
+          <div className="home-hero-photo">
+            <img
+              src={siteUrl("/svoya-coffee-v2.png")}
+              alt="Жінки знайомляться й розмовляють за кавою"
+              fetchPriority="high"
+            />
+            <span className="home-photo-label">
+              <Coffee size={17} />
+              Знайомство починається з кави
+            </span>
+            <span className="home-photo-index">01 / СВОЇ МОМЕНТИ</span>
+          </div>
+        </section>
+        <div className="home-ribbon" aria-label="Що є у клубі">
+          <span>Подруги у твоєму місті</span>
+          <span>Зустрічі та спільні плани</span>
+          <span>Жіноча підтримка</span>
+        </div>
+        <PortraitStrip />
+        <section className="home-intro home-section" id="about">
+          <p className="home-kicker">ЦЕ І Є «СВОЯ»</p>
+          <div>
+            <h2>
+              Дорослій дружбі
+              <br />
+              теж потрібне <em>місце.</em>
+            </h2>
+            <p>
+              Ми можемо жити на сусідніх вулицях і так і не зустрітися. «СВОЯ» —
+              жіночий клуб, який допомагає зробити цей перший крок.
+            </p>
+            <p>
+              Знайомитися без незручних приводів. Пробувати нове разом.
+              Знаходити підтримку для себе та своєї справи.
+            </p>
+          </div>
+          <div className="home-intro-aside">
+            <span>
+              Без потреби
+              <br />
+              бути ідеальною.
+            </span>
+            <Heart strokeWidth={1.2} />
+            <p>
+              Достатньо бути собою
+              <br />і мати бажання зустрітися.
+            </p>
+          </div>
+        </section>
+        <section className="home-moments home-section" id="formats">
+          <div className="home-section-title">
+            <div>
+              <p className="home-kicker">
+                НЕВЕЛИКІ ПЛАНИ. СПРАВЖНІ ЗНАЙОМСТВА.
+              </p>
+              <h2>
+                З чого почнеться
+                <br />
+                <em>твоя історія?</em>
+              </h2>
+            </div>
+            <p>
+              Обирай те, що відгукується.
+              <br />
+              Або запропонуй щось своє.
+            </p>
+          </div>
+          <div className="home-moments-grid">
+            <a
+              href={siteUrl("/club?section=event")}
+              className="home-moment home-moment-walk"
+            >
+              <div className="home-moment-image">
+                <img
+                  src={siteUrl("/svoya-walk.webp")}
+                  alt="Подруги спілкуються на прогулянці в осінньому парку"
+                  loading="lazy"
+                />
+                <span>01 / ЗМІНИТИ МАРШРУТ</span>
+              </div>
+              <div className="home-moment-text">
+                <h3>
+                  Вийти на прогулянку.
+                  <br />
+                  Залишитися на розмову.
+                </h3>
+                <p>
+                  Звичайний день, нове знайомство і місто, яке стає трохи
+                  ближчим.
+                </p>
+              </div>
+            </a>
+            <a
+              href={siteUrl("/club?section=event")}
+              className="home-moment home-moment-create"
+            >
+              <div className="home-moment-image">
+                <img
+                  src={siteUrl("/svoya-ceramics.webp")}
+                  alt="Творча зустріч жінок у керамічній майстерні"
+                  loading="lazy"
+                />
+                <span>02 / СПРОБУВАТИ РАЗОМ</span>
+              </div>
+              <div className="home-moment-text">
+                <h3>
+                  Щось нове —<br />у хорошій компанії.
+                </h3>
+                <p>
+                  Творчість, майстерки, виставки. Не обов’язково вміти — можна
+                  просто спробувати.
+                </p>
+              </div>
+            </a>
+            <a
+              href={siteUrl("/club?section=circle")}
+              className="home-moment-quote"
+            >
+              <span className="home-kicker">03 / ЗУСТРІТИСЯ ЗНОВУ</span>
+              <Users size={38} strokeWidth={1.2} />
+              <h3>
+                «На тому ж місці,
+                <br />
+                <em>наступної суботи?»</em>
+              </h3>
+              <p>
+                Коло за інтересами, спільний чат і наступна зустріч, на яку
+                чекаєш.
+              </p>
+              <span className="home-text-link">Знайти своє коло</span>
+            </a>
+          </div>
+          <p className="home-formats-note">
+            Це ідеї для зустрічей. Актуальні дати та умови — у публікаціях
+            клубу.
+          </p>
+        </section>
+        <section className="home-world" aria-labelledby="world-title">
+          <div className="home-world-intro">
+            <p className="home-kicker">ОДИН КЛУБ. РІЗНІ СТОРОНИ ТЕБЕ.</p>
+            <h2 id="world-title">
+              Ти — більше,
+              <br />
+              ніж одна <em>роль.</em>
+            </h2>
+            <p>
+              Тут є місце і відпочинку, і твоїй справі. І бажанню подбати про
+              себе, і можливості підтримати іншу.
+            </p>
+            <a
+              className="home-button home-button-light"
+              href={siteUrl("/club")}
+            >
+              Відкрити клуб
+            </a>
+          </div>
+          <div className="home-paths">
+            {paths.map((p) => (
+              <a key={p.n} href={siteUrl(`/club?section=${p.href}`)}>
+                <span className="home-path-number">{p.n}</span>
+                <p.icon size={25} strokeWidth={1.3} />
+                <div>
+                  <h3>{p.title}</h3>
+                  <p>{p.text}</p>
+                </div>
+                <Plus size={22} />
+              </a>
+            ))}
+          </div>
+        </section>
+        <LandingLive />
+        <section className="home-first home-section" id="first-step">
+          <div className="home-section-title">
+            <div>
+              <p className="home-kicker">НЕ ТРЕБА ОСОБЛИВОГО ПРИВОДУ</p>
+              <h2>
+                Перший крок —<br />
+                <em>познайомитися.</em>
+              </h2>
+            </div>
+            <a
+              className="home-button home-button-dark"
+              href={siteUrl("/club?section=profile")}
+            >
+              Створити профіль
+            </a>
+          </div>
+          <div className="home-steps">
+            <article>
+              <span>01</span>
+              <h3>Покажи себе</h3>
+              <p>Підтвердь email, додай фото, місто та кілька слів про те, що любиш.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Знайди, що відгукується</h3>
+              <p>Після схвалення анкети обери зустріч, коло або нове знайомство.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Домовтеся про зустріч</h3>
+              <p>
+                Дочекайся підтвердження. Узгодьте деталі й побачтеся наживо.
+              </p>
+            </article>
+          </div>
+        </section>
+        <section className="home-final">
+          <span className="home-kicker">
+            СВОЇ ЛЮДИ НЕ ЗАВЖДИ ЗНАХОДЯТЬСЯ САМІ.
+          </span>
+          <h2>
+            Іноді достатньо
+            <br />
+            сказати <em>«привіт».</em>
+          </h2>
+          <a className="home-button home-button-dark" href={siteUrl("/club")}>
+            Я з вами
+          </a>
+          <span className="home-final-note">СВОЯ · жіночий клуб · 18+</span>
+        </section>
+      </main>
+      <footer className="home-footer">
+        <Brand className="home-brand" />
+        <p>Знайомства, які продовжуються.</p>
+        <div>
+          <a href="#about">Про клуб</a>
+          <a href={siteUrl("/club")}>До спільноти</a>
+        </div>
+      </footer>
+    </HomeMotion>
+  );
+}
