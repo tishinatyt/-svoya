@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'node:crypto';
 import { resolve } from 'node:path';
+import { readFile } from 'node:fs/promises';
 import { localStack } from '../../scripts/local-stack.mjs';
 
 const stack = localStack();
@@ -11,6 +12,54 @@ const admin = createClient(stack.API_URL, stack.SERVICE_ROLE_KEY, {
 const club = '/-svoya/club/';
 const password = () => `Svoya-browser-${randomUUID()}!`;
 const email = () => `svoya-browser-${randomUUID()}@example.invalid`;
+
+test('moderator awards a title with history; member sees it without moderation rights', async ({page}, info) => {
+  const fixtures=[];
+  for (const label of ['Команда титулів','Учасниця титулів']) {
+    const name=`${label} ${randomUUID().slice(0,8)}`;
+    const address=email(), secret=password();
+    const created=await admin.auth.admin.createUser({email:address,password:secret,email_confirm:true});
+    expect(created.error).toBeNull();
+    const id=created.data.user.id, photo=`${id}/${randomUUID()}.png`;
+    expect((await admin.storage.from('svoya-profile-photos').upload(photo,await readFile(resolve('public/svoya-icon-192.png')),{contentType:'image/png'})).error).toBeNull();
+    expect((await admin.from('svoya_profiles').insert({id,name,city:'Титульне місто',photo_paths:[photo],membership_status:'approved'})).error).toBeNull();
+    fixtures.push({id,address,secret,name});
+  }
+  const [moderator,member]=fixtures;
+  expect((await admin.from('svoya_admins').insert({user_id:moderator.id})).error).toBeNull();
+  let dialog=await openLogin(page);
+  await dialog.getByLabel('Логін або email',{exact:true}).fill(moderator.address);
+  await dialog.getByLabel(/^Пароль/).fill(moderator.secret);
+  await dialog.getByRole('button',{name:'Увійти',exact:true}).click();
+  await expect(dialog.getByLabel('Ім’я',{exact:true})).toHaveValue(moderator.name);
+  await closeDialog(page);
+  await page.getByRole('button',{name:'Модерація',exact:true}).click();
+  await page.getByRole('button',{name:'Титули',exact:true}).click();
+  await page.getByLabel('Знайти анкету').fill(member.name);
+  const card=page.locator('.sv-feature-box').filter({has:page.getByRole('heading',{name:`${member.name} · Титульне місто`,exact:true})});
+  await expect(card).toHaveCount(1);
+  await card.getByLabel('Титул учасниці').selectOption('inspirer');
+  await expect(card.getByRole('button',{name:'Зберегти титул',exact:true})).toBeDisabled();
+  await card.getByLabel('Підстава для титулу').fill('Підтверджено дві зустрічі тестового кола.');
+  await card.getByRole('button',{name:'Зберегти титул',exact:true}).click();
+  await expect(card.getByLabel('Титул: Натхненниця',{exact:true})).toBeVisible();
+  await card.getByRole('button',{name:'Історія титулів',exact:true}).click();
+  await expect(card.locator('.sv-title-history')).toContainText('Підтверджено дві зустрічі');
+  await fitsViewport(page);await capture(page,info,'title-moderation');
+  await logout(page);
+  dialog=await openLogin(page);
+  await dialog.getByLabel('Логін або email',{exact:true}).fill(member.address);
+  await dialog.getByLabel(/^Пароль/).fill(member.secret);
+  await dialog.getByRole('button',{name:'Увійти',exact:true}).click();
+  await expect(dialog.getByLabel('Ім’я',{exact:true})).toHaveValue(member.name);
+  await closeDialog(page);
+  await page.goto(`${club}?section=profile`);
+  await expect(page.getByLabel('Титул: Натхненниця',{exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Модерація',exact:true})).toHaveCount(0);
+  await page.getByText('Титули та як їх отримати',{exact:true}).click();
+  await expect(page.locator('.sv-title-path .is-current')).toContainText('Натхненниця');
+  await fitsViewport(page);await capture(page,info,'member-title-profile');
+});
 
 test.beforeEach(async ({ context, page }) => {
   // Block all external traffic, including accidental calls to the shared database.

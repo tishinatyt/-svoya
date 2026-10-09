@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { clubDb } from "@/lib/club-db";
 import type { Profile } from "@/lib/club-types";
 import { MemberAvatar } from "../profile-photos";
+import { MemberTitleBadge } from './member-titles';
 import {
   action,
   EmptyState,
@@ -474,6 +475,7 @@ export default function People({
                         <article className="sv-person-card" key={p.id}>
                           <MemberAvatar profile={p} large />
                           <h3>{p.name}</h3>
+                          <MemberTitleBadge profile={p} />
                           <span>
                             {p.city}
                             {p.district ? ` · ${p.district}` : ""}
@@ -548,6 +550,7 @@ export default function People({
                               <MemberAvatar profile={p} />
                               <div>
                                 <h3>{p?.name ?? "Учасниця клубу"}</h3>
+                                <MemberTitleBadge profile={p} />
                                 <p>
                                   {f.status === "accepted"
                                     ? "Запрошення прийнято"
