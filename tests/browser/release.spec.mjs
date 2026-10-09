@@ -42,7 +42,7 @@ test('moderator awards a title with history; member sees it without moderation r
   await expect(card.getByRole('button',{name:'Зберегти титул',exact:true})).toBeDisabled();
   await card.getByLabel('Підстава для титулу').fill('Підтверджено дві зустрічі тестового кола.');
   await card.getByRole('button',{name:'Зберегти титул',exact:true}).click();
-  await expect(card.getByLabel('Титул: Натхненниця',{exact:true})).toBeVisible();
+  await expect(card.getByLabel('Титул: Графиня',{exact:true})).toBeVisible();
   await card.getByRole('button',{name:'Історія титулів',exact:true}).click();
   await expect(card.locator('.sv-title-history')).toContainText('Підтверджено дві зустрічі');
   await fitsViewport(page);await capture(page,info,'title-moderation');
@@ -54,10 +54,10 @@ test('moderator awards a title with history; member sees it without moderation r
   await expect(dialog.getByLabel('Ім’я',{exact:true})).toHaveValue(member.name);
   await closeDialog(page);
   await page.goto(`${club}?section=profile`);
-  await expect(page.getByLabel('Титул: Натхненниця',{exact:true})).toBeVisible();
+  await expect(page.getByLabel('Титул: Графиня',{exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Модерація',exact:true})).toHaveCount(0);
   await page.getByText('Титули та як їх отримати',{exact:true}).click();
-  await expect(page.locator('.sv-title-path .is-current')).toContainText('Натхненниця');
+  await expect(page.locator('.sv-title-path .is-current')).toContainText('Графиня');
   await fitsViewport(page);await capture(page,info,'member-title-profile');
 });
 

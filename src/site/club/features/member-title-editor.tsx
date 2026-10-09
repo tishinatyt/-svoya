@@ -45,15 +45,15 @@ export default function MemberTitleEditor({profile,onChange}: {profile:Profile;o
         {titleKeys.map(key=><option key={key} value={key}>{memberTitles[key].label}</option>)}
       </select></label>
       <p className="sv-title-criteria">{memberTitles[next].criteria}</p>
-      <label>Підстава для титулу<textarea value={reason} onChange={e=>setReason(e.target.value)} required minLength={10} maxLength={1000} disabled={busy} placeholder="Які зустрічі або внесок підтверджено? Для амбасадорки — також згода учасниці." /></label>
-      <small>Пояснення бачить тільки команда. Для скасування відзнаки обери «Своя» та вкажи причину.</small>
+      <label>Підстава для титулу<textarea value={reason} onChange={e=>setReason(e.target.value)} required minLength={10} maxLength={1000} disabled={busy} placeholder="Які зустрічі або внесок підтверджено? Для княгині — також згода учасниці." /></label>
+      <small>Пояснення бачить тільки команда. Для скасування відзнаки обери «Дама» та вкажи причину.</small>
       <button className="sv-btn" disabled={busy || next===current || reason.trim().length<10}>Зберегти титул</button>
     </form>
     <button className="sv-text-button" aria-expanded={showHistory} onClick={()=>setShowHistory(v=>!v)}>Історія титулів</button>
     {showHistory && <div aria-live="polite">
       {loading ? <p role="status">Завантажуємо історію…</p> : error ? <ErrorState retry={()=>setRetry(v=>v+1)}/> : history.length ? <ol className="sv-title-history">
         {history.map(item=><li key={item.id}><strong>{memberTitles[normalizedTitle(item.action.split(':')[2])].label}</strong><time dateTime={item.created_at}>{new Date(item.created_at).toLocaleString('uk-UA')}</time><p>{item.note}</p></li>)}
-      </ol> : <p className="sv-muted">Титул ще не змінювали. «Своя» з’являється після схвалення анкети.</p>}
+      </ol> : <p className="sv-muted">Титул ще не змінювали. «Дама» з’являється після схвалення анкети.</p>}
       {!loading && !error && history.length===10 && <small>Показано останні 10 рішень. Повний журнал збережено.</small>}
     </div>}
   </div>;

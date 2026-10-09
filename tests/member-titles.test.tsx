@@ -6,10 +6,10 @@ import {MemberTitleBadge,MemberTitleGuide} from '../src/site/club/features/membe
 import type {Profile} from '../src/lib/club-types';
 const profile:Profile={id:'fixture',name:'Fixture',city:'Чернігів',bio:'',photo_paths:[],interests:[],membership_status:'approved'};
 test('title badges hide pending and suspended awards, and old profiles keep the basic title',()=>{
-  assert.match(renderToStaticMarkup(<MemberTitleBadge profile={profile}/>),/Титул: Своя/);
+  assert.match(renderToStaticMarkup(<MemberTitleBadge profile={profile}/>),/Титул: Дама/);
   assert.equal(renderToStaticMarkup(<MemberTitleBadge profile={{...profile,membership_status:'pending',member_title:'ambassador'}}/>),'');
   assert.equal(renderToStaticMarkup(<MemberTitleBadge profile={{...profile,membership_status:'suspended',member_title:'inspirer'}}/>),'');
-  assert.match(renderToStaticMarkup(<MemberTitleBadge profile={{...profile,member_title:'inspirer'}}/>),/Титул: Натхненниця/);
+  assert.match(renderToStaticMarkup(<MemberTitleBadge profile={{...profile,member_title:'inspirer'}}/>),/Титул: Графиня/);
 });
 test('title guide explains manual verification without promising automatic attendance or admin rights',()=>{
   const html=renderToStaticMarkup(<MemberTitleGuide profile={{...profile,member_title:'active'}}/>);
