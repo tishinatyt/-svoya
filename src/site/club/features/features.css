@@ -300,7 +300,7 @@
     serif;
   margin: 17px 0 8px;
 }
-.sv-person-card > span {
+.sv-person-card > span:not(.sv-member-title) {
   font-size: 12px;
   color: #7b676c;
 }
