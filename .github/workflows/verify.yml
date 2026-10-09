@@ -42,6 +42,20 @@ jobs:
             exit 1
           fi
       - run: npm run test:integration
+      - name: Install isolated browser test engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Verify desktop and mobile browser flows
+        run: npm run test:browser
+      - name: Keep browser screenshots and failure reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: svoya-browser-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
       - name: Stop isolated stack
         if: always()
         run: npm run local:stop

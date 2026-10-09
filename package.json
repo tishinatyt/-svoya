@@ -15,7 +15,8 @@
     "typecheck": "tsc -b",
     "local:start": "supabase start --workdir supabase-svoya --exclude realtime,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
     "local:stop": "supabase stop --workdir supabase-svoya",
-    "local:env": "node scripts/local-env.mjs"
+    "local:env": "node scripts/local-env.mjs",
+    "test:browser": "playwright test"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.103.3",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8",
+    "@playwright/test": "1.64.0",
     "@tailwindcss/vite": "^4.1.11",
     "@types/node": "^26.1.2",
     "@types/react": "^19.1.8",
