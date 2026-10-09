@@ -31,7 +31,8 @@ test('moderator awards a title with history; member sees it without moderation r
   await dialog.getByLabel('Логін або email',{exact:true}).fill(moderator.address);
   await dialog.getByLabel(/^Пароль/).fill(moderator.secret);
   await dialog.getByRole('button',{name:'Увійти',exact:true}).click();
-  await expect(dialog).toHaveCount(0);
+  await expect(dialog.getByLabel('Ім’я',{exact:true})).toHaveValue(moderator.name);
+  await closeDialog(page);
   await page.getByRole('button',{name:'Модерація',exact:true}).click();
   await page.getByRole('button',{name:'Титули',exact:true}).click();
   await page.getByLabel('Знайти анкету').fill(member.name);
@@ -50,7 +51,8 @@ test('moderator awards a title with history; member sees it without moderation r
   await dialog.getByLabel('Логін або email',{exact:true}).fill(member.address);
   await dialog.getByLabel(/^Пароль/).fill(member.secret);
   await dialog.getByRole('button',{name:'Увійти',exact:true}).click();
-  await expect(dialog).toHaveCount(0);
+  await expect(dialog.getByLabel('Ім’я',{exact:true})).toHaveValue(member.name);
+  await closeDialog(page);
   await page.goto(`${club}?section=profile`);
   await expect(page.getByLabel('Титул: Натхненниця',{exact:true})).toBeVisible();
   await expect(page.getByRole('button',{name:'Модерація',exact:true})).toHaveCount(0);
