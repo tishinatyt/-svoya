@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-10-09T11:56:38.616963+00:00",
+  "project": "pqasdmiqnlyyjwmmqeyc",
+  "scope": "SVOYA greeter consistency only; not a full shared-project backup",
+  "source_function_md5": "cc3c927427675e29707d32bcb738e4bd",
+  "source_function_owner": "postgres",
+  "source_function_acl": "{postgres=X/postgres,authenticated=X/postgres}",
+  "membership_count": 0,
+  "invalid_assignment_count": 0,
+  "repair_function_existed": false,
+  "new_triggers": [],
+  "rollback_file": "supabase-svoya/rollback/greeter-consistency.sql",
+  "migration_sha256": "3408e1deafd5380156b9fb7bbe153326cefec5079855d27e18463d7fdc117087",
+  "other_public_functions_md5": "a964ad2d495cf8cb7ab02ad2044b034c",
+  "other_policies_md5": "5fce12697e30eb5bcc4d2ba9ca64c667",
+  "guard": "Abort under write locks if any memberships exist or the backed-up function/ACL/schema has changed. Historical repair must change zero existing rows.",
+  "membership_rows": [],
+  "backup_verified_against_production": true
+}
