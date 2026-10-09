@@ -3,6 +3,7 @@ import type { User } from "@supabase/supabase-js";
 import { clubDb } from "@/lib/club-db";
 import { toast } from "sonner";
 import { useTask, authRedirect } from "./shared";
+import { loginAddress, registerUsername, usernameFor, usernameRegistration } from "@/lib/club-login";
 export default function AuthPanel({
   user,
   recovery = false,
@@ -19,6 +20,8 @@ export default function AuthPanel({
   const { busy, run } = useTask();
   const anonymous = !!user?.is_anonymous;
   const emailPending = anonymous && !!user?.new_email;
+  const usernameSignup = usernameRegistration() && mode === "signup";
+  const savedUsername = usernameFor(user);
   async function submit(ev: FormEvent<HTMLFormElement>) {
     ev.preventDefault();
     const f = new FormData(ev.currentTarget);
@@ -29,11 +32,15 @@ export default function AuthPanel({
         const r = await clubDb().auth.updateUser({ password });
         if (r.error) throw r.error;
         toast.success("Пароль збережено.");
-        setNotice("Тепер можна входити з email і цим паролем.");
+        setNotice("Пароль оновлено. Збережи його для наступного входу.");
         onComplete();
         return;
       }
       if (mode === "reset") {
+        if (!email.includes('@')) {
+          setNotice("Для акаунта за логіном відновлення через пошту недоступне. Якщо ти ще ввійшла на іншому пристрої, зміни пароль у своєму профілі. Збережи новий пароль у менеджері паролів.");
+          return;
+        }
         const r = await clubDb().auth.resetPasswordForEmail(email, {
           redirectTo: authRedirect(),
         });
@@ -44,9 +51,16 @@ export default function AuthPanel({
         return;
       }
       if (mode === "login") {
-        const r = await clubDb().auth.signInWithPassword({ email, password });
+        const r = await clubDb().auth.signInWithPassword({ email: loginAddress(email), password });
         if (r.error) throw r.error;
         toast.success("Ти увійшла до клубу.");
+        onComplete();
+        return;
+      }
+      if (usernameSignup) {
+        if (password !== String(f.get("confirmPassword") ?? "")) throw new Error('SV_PASSWORD_MISMATCH');
+        await registerUsername(String(f.get("username") ?? ""),password,anonymous);
+        toast.success("Акаунт створено. Збережи свій логін і пароль.");
         onComplete();
         return;
       }
@@ -71,7 +85,7 @@ export default function AuthPanel({
         onComplete();
       } else
         setNotice(
-          "Ми надіслали лист. Підтвердь email, потім увійди та заповни анкету клубу.",
+          "Якщо це новий email, очікуй лист підтвердження. Якщо акаунт уже існує, скористайся входом або відновленням пароля.",
         );
     });
   }
@@ -81,8 +95,8 @@ export default function AuthPanel({
         <div>
           <span className="sv-overline">ПОСТІЙНИЙ АКАУНТ</span>
           <h3>Твій профіль збережений</h3>
-          <p>{user.email}</p>
-          <small>Можна увійти з іншого пристрою за email і паролем.</small>
+          <p>{savedUsername ? `Логін: ${savedUsername}` : user.email}</p>
+          <small>Можна увійти з іншого пристрою за {savedUsername ? "логіном" : "email"} і паролем.</small>
         </div>
         <button className="sv-outline" onClick={() => setMode("password")}>
           Задати / змінити пароль
@@ -95,10 +109,9 @@ export default function AuthPanel({
         <>
           <h3>Збережи свій профіль назавжди</h3>
           <p>
-            Прив’яжи email до цього швидкого профілю. Після підтвердження створи
-            пароль. Не виходь з акаунта до завершення.
+            {usernameSignup ? "Обери логін і пароль для цього профілю. Фото й заявки залишаться з тобою. Не виходь до завершення." : "Прив’яжи email до цього швидкого профілю. Після підтвердження створи пароль. Не виходь з акаунта до завершення."}
           </p>
-          {emailPending && (
+          {emailPending && !usernameSignup && (
             <p className="sv-notice">
               Чекаємо підтвердження: {user?.new_email}
             </p>
@@ -127,14 +140,20 @@ export default function AuthPanel({
           </div>
         )
       )}
+      {usernameSignup && <p className="sv-notice">Тимчасово реєструємо без email. Збережи логін і пароль: відновлення через пошту для такого акаунта недоступне.</p>}
       <form className="sv-form" onSubmit={submit}>
-        {mode !== "password" && (
+        {usernameSignup ? (
+          <label>Логін
+            <input name="username" type="text" required minLength={3} maxLength={24} pattern="[A-Za-z0-9][A-Za-z0-9_]{2,23}" autoComplete="username" autoCapitalize="none" spellCheck={false} />
+            <small>3–24 латинські літери, цифри або _. Без пробілів.</small>
+          </label>
+        ) : mode !== "password" && (
           <label>
-            Email
-            <input name="email" type="email" required autoComplete="email" />
+            {mode === "signup" ? "Email" : "Логін або email"}
+            <input name="email" type={mode === "signup" ? "email" : "text"} required autoComplete={mode === "signup" ? "email" : "username"} autoCapitalize="none" spellCheck={false} />
           </label>
         )}
-        {!anonymous && mode !== "reset" && (
+        {(!anonymous || usernameSignup) && mode !== "reset" && (
           <label>
             {mode === "password" ? "Новий пароль" : "Пароль"}
             <input
@@ -150,10 +169,11 @@ export default function AuthPanel({
             <small>{mode === "login" ? "" : "Щонайменше 10 символів."}</small>
           </label>
         )}
+        {usernameSignup && <label>Повтори пароль<input name="confirmPassword" type="password" required minLength={10} maxLength={128} autoComplete="new-password" /></label>}
         <button className="sv-btn" disabled={busy}>
           {busy
             ? "Зачекай…"
-            : anonymous
+            : anonymous && !usernameSignup
               ? "Надіслати підтвердження"
               : mode === "signup"
                 ? "Створити акаунт"
@@ -169,7 +189,7 @@ export default function AuthPanel({
           {notice}
         </p>
       )}
-      {anonymous && (
+      {anonymous && !usernameSignup && (
         <small>
           Якщо email уже зайнятий іншим акаунтом, прив’яжи інший власний email.
           Дані різних акаунтів автоматично не об’єднуються.

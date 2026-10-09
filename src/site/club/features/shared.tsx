@@ -8,6 +8,15 @@ export function messageFor(error: unknown) {
   const msg = String((error as { message?: string })?.message ?? "");
   const errors: Record<string, string> = {
     SV_REVIEW_PENDING: "Анкета очікує на схвалення команди клубу.",
+    SV_USERNAME_INVALID: "Логін: 3–24 латинські літери, цифри або _. Обери власне ім’я без пробілів.",
+    SV_USERNAME_TAKEN: "Цей логін уже зайнятий. Обери інший або увійди до свого акаунта.",
+    SV_PASSWORD_LENGTH: "Пароль має містити від 10 до 128 символів.",
+    SV_PASSWORD_MISMATCH: "Паролі не збігаються. Перевір повторення.",
+    SV_SIGNUP_LIMIT: "Забагато спроб реєстрації. Спробуй пізніше.",
+    SV_REGISTRATION_UNAVAILABLE: "Реєстрація зараз недоступна. Спробуй ще раз трохи пізніше.",
+    SV_SESSION_REQUIRED: "Сесію завершено. Онови сторінку та спробуй знову.",
+    SV_ACCOUNT_ALREADY_SAVED: "Цей акаунт уже збережено. Скористайся входом.",
+    SV_CREATED_LOGIN_AGAIN: "Акаунт створено. Відкрий «Вхід» і введи свій логін та пароль.",
     SV_EMAIL_REQUIRED:
       "Спершу потрібно підтвердити email і зберегти постійний акаунт.",
     SV_ADMIN_ONLY: "Ця дія доступна команді клубу.",
@@ -22,7 +31,7 @@ export function messageFor(error: unknown) {
     SV_IMAGE_LIMIT: "Можна завантажити до 6 фото за раз.",
     SV_QUICK_TIME: "Швидкий план має починатися в найближчі 24 години.",
     SV_IMAGE_INVALID: "Не вдалося підтвердити завантажене фото.",
-    "Invalid login credentials": "Перевір email і пароль.",
+    "Invalid login credentials": "Перевір логін або email і пароль.",
     "Email not confirmed": "Підтвердь email за посиланням у листі.",
     "rate limit": "Забагато спроб. Спробуй пізніше.",
     "User already registered":

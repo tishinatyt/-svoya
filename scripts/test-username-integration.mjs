@@ -1,0 +1,49 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { createClient } from '@supabase/supabase-js';
+import { localStack } from './local-stack.mjs';
+const stack=localStack();
+const options={auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}};
+const admin=createClient(stack.API_URL,stack.SERVICE_ROLE_KEY,options);
+const fresh=()=>createClient(stack.API_URL,stack.ANON_KEY,options);
+const username=()=>`test_${randomUUID().replaceAll('-','').slice(0,16)}`;
+const password=()=>`Svoya-${randomUUID()}!`;
+const endpoint=`${stack.API_URL}/functions/v1/svoya-register`;
+const headers={apikey:stack.ANON_KEY,Authorization:`Bearer ${stack.ANON_KEY}`,'Content-Type':'application/json',Origin:'http://127.0.0.1:5173'};
+for(let i=0;i<40;i++){
+ const r=await fetch(endpoint,{headers}).catch(()=>null);
+ if(r?.status===405) break;
+ if(i===39) throw new Error(`Local registration function unavailable (${r?.status})`);
+ await new Promise(resolve=>setTimeout(resolve,500));
+}
+async function register(body,token){return fetch(endpoint,{method:'POST',headers:{...headers,...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify(body)});}
+const name=username(),secret=password(),db=fresh();
+const mailboxBefore=await (await fetch('http://127.0.0.1:55424/api/v1/messages')).json();
+let r=await register({username:name,password:secret});
+assert.equal(r.status,201,`Username signup status; response code: ${(await r.json()).code??'ok'}`);
+let signed=await db.auth.signInWithPassword({email:`${name}@login.svoya.invalid`,password:secret});
+assert.equal(signed.error,null);assert.equal(signed.data.user.app_metadata.svoya_username,name);assert.equal(signed.data.user.is_anonymous,false);
+const id=signed.data.user.id;
+await db.auth.signOut({scope:'local'});
+r=await register({username:name.toUpperCase(),password:password()});
+assert.equal(r.status,409);assert.equal((await r.json()).code,'SV_USERNAME_TAKEN');
+signed=await db.auth.signInWithPassword({email:`${name}@login.svoya.invalid`,password:secret});assert.equal(signed.error,null);assert.equal(signed.data.user.id,id);
+const mailboxAfter=await (await fetch('http://127.0.0.1:55424/api/v1/messages')).json();
+assert.ok(Array.isArray(mailboxBefore.messages));assert.equal(mailboxAfter.messages.length,mailboxBefore.messages.length,'Username registration must not send email');
+assert.ok((await fresh().rpc('svoya_allow_username_signup',{ip_hash:'a'.repeat(64)})).error,'Anonymous clients cannot bypass server limit');
+assert.ok((await db.rpc('svoya_allow_username_signup',{ip_hash:'a'.repeat(64)})).error,'Signed-in clients cannot bypass server limit');
+const anonymous=fresh();
+const anon=await anonymous.auth.signInAnonymously();assert.equal(anon.error,null);
+const anonId=anon.data.user.id,anonName=username(),anonPass=password();
+const photoPath=`${anonId}/${randomUUID()}.png`;
+const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j6WQAAAAASUVORK5CYII=','base64');
+assert.equal((await anonymous.storage.from('svoya-profile-photos').upload(photoPath,png,{contentType:'image/png'})).error,null);
+assert.ok((await anonymous.from('svoya_profiles').insert({id:anonId,name:'Local anonymous fixture',city:'Тестове місто',photo_paths:[photoPath]})).error,'New anonymous profiles remain forbidden');
+// Seed a historical quick profile, which predates the current signup restriction.
+assert.equal((await admin.from('svoya_profiles').insert({id:anonId,name:'Local historical anonymous fixture',city:'Тестове місто',photo_paths:[photoPath]})).error,null);
+r=await register({username:anonName,password:anonPass,linkAnonymous:true},anon.data.session.access_token);assert.equal(r.status,201);
+const converted=await fresh().auth.signInWithPassword({email:`${anonName}@login.svoya.invalid`,password:anonPass});
+assert.equal(converted.error,null);assert.equal(converted.data.user.id,anonId);assert.equal(converted.data.user.is_anonymous,false);
+const profile=await admin.from('svoya_profiles').select('id,photo_paths,membership_status').eq('id',anonId).single();assert.equal(profile.error,null);assert.deepEqual(profile.data.photo_paths,[photoPath]);assert.equal(profile.data.membership_status,'pending');
+r=await register({username:username(),password:password(),linkAnonymous:true},signed.data.session.access_token);assert.equal(r.status,409,'Permanent accounts cannot be overwritten');
+console.log('PASS: real username signup without email, duplicate/case safety, repeat login, rate-limit ACL, anonymous upgrade retains UUID/photo/pending profile, permanent-account protection');

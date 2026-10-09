@@ -63,6 +63,11 @@ npx supabase migration new descriptive_name --workdir supabase-svoya
 
 ## Браузерні перевірки
 
+Тимчасова реєстрація за логіном: [USERNAME_AUTH_2026-10-09.md](USERNAME_AUTH_2026-10-09.md).
+Локальний стенд тепер запускає Edge Runtime з `svoya-register`.
+Після `local:start` окремо перевірити його можна командою
+`node scripts/test-username-integration.mjs`.
+
 На запущеному локальному стенді: `npx playwright install chromium webkit`, потім
 `npm run test:browser`. Налаштування Playwright саме читає публічний ключ локального
 стенда й запускає окремий Vite на 5173; порт має бути вільним. Зовнішню мережу в

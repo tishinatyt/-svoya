@@ -22,7 +22,7 @@ for(const file of (await readdir(migrations)).filter(f=>f.endsWith('.sql')).sort
  sql=sql.replace(/^create extension if not exists pg_(net|cron);$/gm,'-- extension represented by isolated stub');
  await db.exec(sql);console.log('Loaded',file);
 }
-for(const file of ['supabase/tests/svoya-community-transaction.sql','supabase-svoya/tests/access-and-greeters.sql']) {
+for(const file of ['supabase/tests/svoya-community-transaction.sql','supabase-svoya/tests/access-and-greeters.sql','supabase-svoya/tests/username-signup.sql']) {
  const results=await db.exec(await readFile(new URL(file,root),'utf8'));
  console.log(file, results.flatMap(r=>r.rows??[]));
 }

@@ -222,7 +222,7 @@ function errorLabel(e: unknown) {
   if (m.includes("SV_CLOSED")) return "Цю зустріч уже закрито.";
   if (m.includes("duplicate"))
     return "Така заявка вже існує. Оновіть сторінку.";
-  if (m.includes("Invalid login")) return "Перевірте email і пароль.";
+  if (m.includes("Invalid login")) return "Перевірте логін або email і пароль.";
   if (m.includes("Email not confirmed"))
     return "Спочатку підтвердьте email у листі.";
   if (m.includes("rate limit"))
@@ -513,7 +513,7 @@ export default function Club() {
       }
       const u = user;
       if (!u || (u.is_anonymous && !profile)) {
-        toast.info("Спочатку створи постійний акаунт та підтвердь email.");
+        toast.info("Спочатку створи постійний акаунт.");
         return;
       }
       const uploaded: string[] = [];
