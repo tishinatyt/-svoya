@@ -1,0 +1,24 @@
+{
+  "applied_at": "2026-10-09T11:59:01Z",
+  "migration_version": "20261009115901",
+  "migration_name": "svoya_greeter_consistency",
+  "source_migration": "20261009104307_svoya_greeter_consistency.sql",
+  "backup_commit": "2840cabe5df0dc3f6461283e0fc4e226df842461",
+  "verification": {
+    "checked_at": "2026-10-09T11:59:15.713414+00:00",
+    "new_triggers": [
+      "svoya_greeter_profile",
+      "svoya_greeter_membership",
+      "svoya_greeter_block"
+    ],
+    "membership_count": 0,
+    "other_policies_md5": "5fce12697e30eb5bcc4d2ba9ca64c667",
+    "community_action_acl": "{postgres=X/postgres,authenticated=X/postgres}",
+    "community_action_md5": "d809c1371e1bc23de91be0464bf159ae",
+    "community_action_owner": "postgres",
+    "repair_function_exists": true,
+    "invalid_assignment_count": 0,
+    "other_public_functions_md5": "a964ad2d495cf8cb7ab02ad2044b034c"
+  },
+  "security_findings_unchanged": true
+}
