@@ -15,7 +15,8 @@ const email = () => `svoya-browser-${randomUUID()}@example.invalid`;
 
 test('moderator awards a title with history; member sees it without moderation rights', async ({page}, info) => {
   const fixtures=[];
-  for (const name of ['Команда титулів','Учасниця титулів']) {
+  for (const label of ['Команда титулів','Учасниця титулів']) {
+    const name=`${label} ${randomUUID().slice(0,8)}`;
     const address=email(), secret=password();
     const created=await admin.auth.admin.createUser({email:address,password:secret,email_confirm:true});
     expect(created.error).toBeNull();
