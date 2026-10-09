@@ -38,7 +38,9 @@ const anonId=anon.data.user.id,anonName=username(),anonPass=password();
 const photoPath=`${anonId}/${randomUUID()}.png`;
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j6WQAAAAASUVORK5CYII=','base64');
 assert.equal((await anonymous.storage.from('svoya-profile-photos').upload(photoPath,png,{contentType:'image/png'})).error,null);
-assert.equal((await anonymous.from('svoya_profiles').insert({id:anonId,name:'Local anonymous fixture',city:'Тестове місто',photo_paths:[photoPath]})).error,null);
+assert.ok((await anonymous.from('svoya_profiles').insert({id:anonId,name:'Local anonymous fixture',city:'Тестове місто',photo_paths:[photoPath]})).error,'New anonymous profiles remain forbidden');
+// Seed a historical quick profile, which predates the current signup restriction.
+assert.equal((await admin.from('svoya_profiles').insert({id:anonId,name:'Local historical anonymous fixture',city:'Тестове місто',photo_paths:[photoPath]})).error,null);
 r=await register({username:anonName,password:anonPass,linkAnonymous:true},anon.data.session.access_token);assert.equal(r.status,201);
 const converted=await fresh().auth.signInWithPassword({email:`${anonName}@login.svoya.invalid`,password:anonPass});
 assert.equal(converted.error,null);assert.equal(converted.data.user.id,anonId);assert.equal(converted.data.user.is_anonymous,false);
