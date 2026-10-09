@@ -100,5 +100,20 @@ ok(await newcomer.from('svoya_blocks').insert({ blocker_id: ids[2], blocked_id: 
 assert.equal(ok(await guest.from('svoya_friend_messages').select('id').eq('friendship_id', friendship.id), 'Blocked chat read').length, 0);
 assert.ok((await guest.storage.from('svoya-profile-photos').createSignedUrl(paths[2], 60)).error, 'Blocked profile photo signing must fail');
 console.log('PASS: consent-gated private chat, third-party isolation, blocking and private photo access');
+// Competing real HTTP requests must not overbook the last seats.
+const race = ok(await host.from('svoya_entries').insert({ owner_id: ids[0], kind: 'event', title: 'Одночасні тестові заявки', city: 'Тестове місто', starts_at: new Date(Date.now()+172800000).toISOString(), capacity: 2 }).select('id').single(), 'Create concurrent fixture');
+const competitors = [guest,newcomer,outsider];
+const joins = await Promise.all(competitors.map(db => db.rpc('svoya_community_action',{action:'join',data:{entry_id:race.id}})));
+const statuses = joins.map(result => ok(result,'Concurrent join').status).sort();
+assert.deepEqual(statuses,['pending','pending','waitlisted']);
+const requests = ok(await host.from('svoya_memberships').select('user_id,status').eq('entry_id',race.id),'Read concurrent requests');
+const reserved = requests.filter(row => row.status==='pending');
+const waiting = requests.find(row => row.status==='waitlisted');
+const cancelledIndex = ids.indexOf(reserved[0].user_id)-1;
+ok(await competitors[cancelledIndex].from('svoya_memberships').delete().eq('entry_id',race.id).eq('user_id',reserved[0].user_id),'Release concurrent seat');
+const afterRelease = ok(await host.from('svoya_memberships').select('user_id,status').eq('entry_id',race.id),'Read promoted concurrent requests');
+assert.equal(afterRelease.filter(row => ['pending','joined'].includes(row.status)).length,2);
+assert.equal(afterRelease.find(row => row.user_id===waiting.user_id).status,'pending');
+console.log('PASS: simultaneous last-seat requests do not overbook, cancellation promotes the waiting applicant');
 for (const db of actors) await db.auth.signOut({ scope: 'local' });
 console.log('Integration fixtures remain only in the disposable local stack. Stop it after the run.');

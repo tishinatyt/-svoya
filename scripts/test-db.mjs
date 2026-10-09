@@ -1,5 +1,6 @@
 import { PGlite } from '@electric-sql/pglite';
 import {readFile,readdir} from 'node:fs/promises';
+import assert from 'node:assert/strict';
 const root=new URL('../',import.meta.url);
 const migrations=new URL('supabase-svoya/supabase/migrations/',root);
 const db=new PGlite();
@@ -25,4 +26,14 @@ for(const file of ['supabase/tests/svoya-community-transaction.sql','supabase-sv
  const results=await db.exec(await readFile(new URL(file,root),'utf8'));
  console.log(file, results.flatMap(r=>r.rows??[]));
 }
+// Verify the schema rollback before using this narrow upgrade on a shared project.
+const definition = async () => (await db.query("select pg_get_functiondef('svoya_private.community_action(text,jsonb)'::regprocedure) as sql")).rows[0].sql;
+const upgraded = await definition();
+await db.exec(await readFile(new URL('supabase-svoya/rollback/greeter-consistency.sql',root),'utf8'));
+assert.equal((await db.query("select count(*)::int as n from pg_trigger where tgname in ('svoya_greeter_membership','svoya_greeter_profile','svoya_greeter_block')")).rows[0].n,0);
+assert.notEqual(await definition(),upgraded);
+await db.exec(await readFile(new URL('20261009104307_svoya_greeter_consistency.sql',migrations),'utf8'));
+assert.equal(await definition(),upgraded);
+await db.exec(await readFile(new URL('supabase-svoya/tests/access-and-greeters.sql',root),'utf8'));
+console.log('PASS: greeter schema rollback and reapplication, then access and greeter regressions');
 await db.close();

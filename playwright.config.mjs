@@ -11,6 +11,7 @@ export default defineConfig({
   retries: 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
+    actionTimeout: 15_000,
     baseURL: 'http://127.0.0.1:5173',
     locale: 'uk-UA',
     timezoneId: 'Europe/Kyiv',

@@ -78,6 +78,7 @@ test('landing, club sections, guest access and dialog fit the viewport', async (
   await capture(page, info, 'club');
   for (const section of ['event', 'circle', 'beauty', 'business', 'help', 'calendar', 'benefits', 'stories', 'discover', 'profile']) {
     await page.goto(`${club}?section=${section}`);
+    await page.waitForLoadState('networkidle');
     await expect(page.locator('.sv-content')).toBeVisible();
     await expect(page.locator('.sv-content')).not.toContainText('Не вдалося завантажити клуб');
     await fitsViewport(page);
@@ -99,10 +100,10 @@ test('real login, required profile photo, gallery changes and logout', async ({ 
   expect(created.error).toBeNull();
   const dialog = await openLogin(page);
   await dialog.getByLabel('Email', { exact: true }).fill(address);
-  await dialog.getByLabel('Пароль', { exact: true }).fill('incorrect-password');
+  await dialog.getByLabel(/^Пароль/).fill('incorrect-password');
   await dialog.getByRole('button', { name: 'Увійти', exact: true }).click();
   await expect(page.getByText('Перевір email і пароль.', { exact: true })).toBeVisible();
-  await dialog.getByLabel('Пароль', { exact: true }).fill(secret);
+  await dialog.getByLabel(/^Пароль/).fill(secret);
   await dialog.getByRole('button', { name: 'Увійти', exact: true }).click();
   await expect(dialog.getByLabel('Ім’я', { exact: true })).toBeVisible();
   await expect(dialog.getByRole('button', { name: 'Приєднатися до клубу', exact: true })).toBeDisabled();
@@ -136,7 +137,7 @@ test('signup email confirmation, logout without profile and password recovery', 
   await page.getByRole('button', { name: 'Приєднатися', exact: true }).click();
   let dialog = page.getByRole('dialog');
   await dialog.getByLabel('Email', { exact: true }).fill(address);
-  await dialog.getByLabel('Пароль', { exact: true }).fill(firstPassword);
+  await dialog.getByLabel(/^Пароль/).fill(firstPassword);
   await dialog.getByRole('button', { name: 'Створити акаунт', exact: true }).click();
   await expect(dialog.getByRole('status')).toContainText('Ми надіслали лист');
   await page.goto(await localEmailLink(address, 'signup'));
@@ -149,14 +150,14 @@ test('signup email confirmation, logout without profile and password recovery', 
   await expect(dialog.getByRole('status')).toContainText('Якщо для цього email');
   await page.goto(await localEmailLink(address, 'recovery'));
   dialog = page.getByRole('dialog');
-  await dialog.getByLabel('Новий пароль', { exact: true }).fill(nextPassword);
+  await dialog.getByLabel(/^Новий пароль/).fill(nextPassword);
   await dialog.getByRole('button', { name: 'Зберегти пароль' }).click();
   await expect(page.getByText('Пароль збережено.', { exact: true })).toBeVisible();
   await closeDialog(page);
   await logout(page);
   dialog = await openLogin(page);
   await dialog.getByLabel('Email', { exact: true }).fill(address);
-  await dialog.getByLabel('Пароль', { exact: true }).fill(nextPassword);
+  await dialog.getByLabel(/^Пароль/).fill(nextPassword);
   await dialog.getByRole('button', { name: 'Увійти', exact: true }).click();
   await expect(dialog.getByLabel('Ім’я', { exact: true })).toBeVisible();
 });
