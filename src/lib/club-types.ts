@@ -37,6 +37,8 @@ export type Profile = {
   district?: string;
   availability?: string[];
   welcomes_newcomers?: boolean;
+  member_title?: "svoya" | "active" | "inspirer" | "ambassador";
+  member_title_updated_at?: string | null;
 };
 export type Membership = {
   entry_id: string;

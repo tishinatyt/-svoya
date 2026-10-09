@@ -13,6 +13,8 @@ import {
   useTask,
 } from "./shared";
 import type { Benefit, Story } from "./community-content";
+import { MemberTitleBadge, MemberTitleGuide } from './member-titles';
+import MemberTitleEditor from './member-title-editor';
 type Report = {
   id: string;
   entry_id: string | null;
@@ -43,9 +45,9 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
       try {
       const db = clubDb();
       let profileQuery = db.from("svoya_profiles").select("*", { count: "exact" });
-      profileQuery = search.trim()
-        ? profileQuery.or(containsFilter(["name", "city"], search))
-        : profileQuery.eq("membership_status", "pending");
+      if (tab === 'titles') profileQuery = profileQuery.eq('membership_status', 'approved');
+      if (search.trim()) profileQuery = profileQuery.or(containsFilter(["name", "city"], search));
+      else if (tab !== 'titles') profileQuery = profileQuery.eq("membership_status", "pending");
       const rows = await Promise.all([
         profileQuery.order("created_at").order("id").range(page * 50, page * 50 + 49),
         db
@@ -81,7 +83,7 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
       active = false;
       clearTimeout(timer);
     };
-  }, [revision, search, page]);
+  }, [revision, search, page, tab]);
   const review = (type: string, id: string, status: string, note = "") =>
     void run(async () => {
       await action(`review_${type}`, { id, status, note });
@@ -104,22 +106,24 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
             "profiles",
             `Анкети · ${pendingCount}`,
           ],
+          ["titles", "Титули"],
           ["reports", `Звернення · ${reports.length}`],
           ["stories", `Історії · ${stories.length}`],
           ["benefits", `Привілеї · ${benefits.length}`],
         ].map(([id, label]) => (
-          <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}>
+          <button key={id} aria-pressed={tab === id} onClick={() => {setTab(id);setPage(0);}}>
             {label}
           </button>
         ))}
       </div>
-      {tab === "profiles" && <>
+      {tab === 'titles' && <MemberTitleGuide />}
+      {(tab === "profiles" || tab === 'titles') && <>
               <label className="sv-admin-search">
                 Знайти анкету
                 <input
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-                  placeholder="Ім’я або місто. Без пошуку — нові анкети."
+                  placeholder={tab === 'titles' ? 'Ім’я або місто. Усі схвалені учасниці.' : "Ім’я або місто. Без пошуку — нові анкети."}
                 />
               </label>
         <div className="sv-inline-actions" aria-label="Сторінки анкет">
@@ -135,7 +139,7 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
         <p role="status">Завантажуємо чергу…</p>
       ) : (
         <div className="sv-feature-stack">
-          {tab === "profiles" && (
+          {(tab === "profiles" || tab === 'titles') && (
             <>
 
               {profiles.map((p) => (
@@ -146,6 +150,7 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
                         <h3>
                           {p.name} · {p.city}
                         </h3>
+                        <MemberTitleBadge profile={p} />
                         <p>{p.bio}</p>
                         <small>
                           {p.membership_status === "approved"
@@ -166,7 +171,7 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
                       Переглянути фото
                     </button>
                     {expanded === p.id && <ProfileGallery profile={p} />}
-                    <form
+                    {tab === 'titles' ? <MemberTitleEditor key={p.id + (p.member_title_updated_at ?? '')} profile={p} onChange={()=>{setRevision(x=>x+1);onChange();}} /> : <form
                       className="sv-form"
                       onSubmit={(e) => {
                         e.preventDefault();
@@ -210,10 +215,11 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
                       <button className="sv-btn" disabled={busy}>
                         Зберегти рішення
                       </button>
-                    </form>
+                    </form>}
                   </article>
                 ))}
-              {!search &&
+              {tab === 'titles' && !profiles.length && <EmptyState title="Схвалених анкет не знайдено"><p>Спробуй інше ім’я або спочатку схвали анкету у вкладці «Анкети».</p></EmptyState>}
+              {tab === 'profiles' && !search &&
                 !profiles.some((p) => p.membership_status === "pending") && (
                   <EmptyState title="Нових анкет поки немає">
                     <p>Для пошуку чинної учасниці введи ім’я вище.</p>

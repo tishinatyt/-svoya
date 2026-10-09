@@ -104,6 +104,7 @@ import Calendar from "./features/calendar";
 import PublicationForm from "./features/publication-form";
 import { Benefits, Stories } from "./features/community-content";
 import Moderation from "./features/moderation";
+import { MemberTitleBadge, MemberTitleGuide } from './features/member-titles';
 import { EntryExtras, GreeterSelect } from "./features/entry-extras";
 import { action, publicPhoto, messageFor } from "./features/shared";
 import "./features/features.css";
@@ -1370,6 +1371,7 @@ export default function Club() {
                   <MemberAvatar profile={profile} large />
                   <div>
                     <h2>{profile.name}</h2>
+                    <MemberTitleBadge profile={profile} />
                     <p>
                       <MapPin size={15} />
                       {profile.city}
@@ -1388,6 +1390,7 @@ export default function Club() {
                   </button>
                 </div>
                 <ProfileGallery profile={profile} onEdit={editProfile} />
+                <MemberTitleGuide profile={profile} />
                 {user?.is_anonymous && (
                   <div className="sv-info-box">
                     <UserRound size={22} />
@@ -1794,6 +1797,7 @@ export default function Club() {
                           {profiles[detail.owner_id] && (
                             <small>Переглянути профіль</small>
                           )}
+                          <MemberTitleBadge profile={profiles[detail.owner_id]} />
                         </span>
                       </button>
                     )}
@@ -2124,6 +2128,7 @@ export default function Club() {
               <div className="sv-member-intro">
                 <MemberAvatar profile={viewingProfile} large />
                 <div>
+                  <MemberTitleBadge profile={viewingProfile} />
                   <p>{viewingProfile.bio || "Рада новим знайомствам."}</p>
                   <div className="sv-tags">
                     {viewingProfile.interests.map((v) => (
