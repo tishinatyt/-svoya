@@ -1,0 +1,39 @@
+project_id = "svoya-local"
+[api]
+enabled = true
+port = 55421
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+[db]
+port = 55422
+shadow_port = 55420
+major_version = 17
+[db.migrations]
+enabled = true
+[db.seed]
+enabled = false
+[studio]
+enabled = false
+[local_smtp]
+enabled = true
+port = 55424
+[storage]
+enabled = true
+file_size_limit = "6MiB"
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:5173/-svoya/club/"
+additional_redirect_urls = ["http://127.0.0.1:5173/-svoya/club/?section=profile", "http://localhost:5173/-svoya/club/?section=profile"]
+enable_signup = true
+enable_anonymous_sign_ins = true
+minimum_password_length = 10
+[auth.email]
+max_frequency = "1s"
+enable_signup = true
+enable_confirmations = true
+double_confirm_changes = true
+[analytics]
+enabled = false
+[edge_runtime]
+enabled = false

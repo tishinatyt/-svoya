@@ -1,3 +1,4 @@
+import { membershipStatusText } from "./membership-status";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { Entry, Membership, Profile } from "@/lib/club-types";
@@ -232,11 +233,7 @@ export default function Calendar({
                   </p>
                   {m && (
                     <small>
-                      {m.status === "waitlisted"
-                        ? "Ти у листі очікування"
-                        : m.status === "joined"
-                          ? "Участь підтверджено"
-                          : "Очікуємо підтвердження"}
+                      {membershipStatusText[m.status]}
                     </small>
                   )}
                   <div className="sv-inline-actions">

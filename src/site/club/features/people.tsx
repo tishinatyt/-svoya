@@ -344,9 +344,11 @@ function FriendChat({
 }
 export default function People({
   profile,
+  refreshKey = 0,
   onLogin,
   onChange,
 }: {
+  refreshKey?: number;
   profile: Profile | null;
   onLogin: () => void;
   onChange: () => void;
@@ -370,7 +372,11 @@ export default function People({
       return;
     }
     setLoading(true);
-    void (async () => {
+    let inFlight = false;
+    const read = async () => {
+      if (inFlight || !active) return;
+      inFlight = true;
+      try {
       const [p, f] = await Promise.all([
         clubDb()
           .from("svoya_profiles")
@@ -401,11 +407,19 @@ export default function People({
       setFriends(f.data ?? []);
       setKnown(Object.fromEntries((all.data ?? []).map((p) => [p.id, p])));
       setLoading(false);
-    })();
+      } catch { if (active) { setError(true); setLoading(false); } }
+      finally { inFlight = false; }
+    };
+    void read();
+    const timer = setInterval(() => { if (document.visibilityState !== "hidden") void read(); }, 15000);
+    const onFocus = () => void read();
+    window.addEventListener("focus", onFocus);
     return () => {
       active = false;
+      clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
     };
-  }, [profile?.id, profile?.city, revision]);
+  }, [profile?.id, profile?.city, profile?.membership_status, revision, refreshKey]);
   return (
     <>
       <FeatureHeader

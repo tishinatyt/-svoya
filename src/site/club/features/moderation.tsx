@@ -1,3 +1,4 @@
+import { containsFilter } from "@/lib/club-queries";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { clubDb } from "@/lib/club-db";
@@ -31,18 +32,22 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
     [revision, setRevision] = useState(0),
     [search, setSearch] = useState(""),
     [expanded, setExpanded] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [profileCount, setProfileCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
   const { busy, run } = useTask();
   useEffect(() => {
     let active = true;
     setLoading(true);
-    void (async () => {
+    const timer = setTimeout(() => { void (async () => {
+      try {
       const db = clubDb();
+      let profileQuery = db.from("svoya_profiles").select("*", { count: "exact" });
+      profileQuery = search.trim()
+        ? profileQuery.or(containsFilter(["name", "city"], search))
+        : profileQuery.eq("membership_status", "pending");
       const rows = await Promise.all([
-        db
-          .from("svoya_profiles")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(300),
+        profileQuery.order("created_at").order("id").range(page * 50, page * 50 + 49),
         db
           .from("svoya_reports")
           .select("*")
@@ -58,19 +63,25 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
           .select("*")
           .eq("status", "pending")
           .order("created_at"),
+        db.from("svoya_profiles").select("id", { count: "exact", head: true }).eq("membership_status", "pending"),
       ]);
       if (!active) return;
+      setProfileCount(rows[0].count ?? 0);
+      setPendingCount(rows[4].count ?? 0);
+      if (page > 0 && page * 50 >= (rows[0].count ?? 0)) setPage(Math.max(0, Math.ceil((rows[0].count ?? 0) / 50) - 1));
       setError(rows.some((r) => r.error));
       setProfiles(rows[0].data ?? []);
       setReports(rows[1].data ?? []);
       setStories(rows[2].data ?? []);
       setBenefits(rows[3].data ?? []);
       setLoading(false);
-    })();
+      } catch { if (active) { setError(true); setLoading(false); } }
+    })(); }, 200);
     return () => {
       active = false;
+      clearTimeout(timer);
     };
-  }, [revision]);
+  }, [revision, search, page]);
   const review = (type: string, id: string, status: string, note = "") =>
     void run(async () => {
       await action(`review_${type}`, { id, status, note });
@@ -91,7 +102,7 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
         {[
           [
             "profiles",
-            `Анкети · ${profiles.filter((p) => p.membership_status === "pending").length}`,
+            `Анкети · ${pendingCount}`,
           ],
           ["reports", `Звернення · ${reports.length}`],
           ["stories", `Історії · ${stories.length}`],
@@ -102,6 +113,22 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
           </button>
         ))}
       </div>
+      {tab === "profiles" && <>
+              <label className="sv-admin-search">
+                Знайти анкету
+                <input
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                  placeholder="Ім’я або місто. Без пошуку — нові анкети."
+                />
+              </label>
+        <div className="sv-inline-actions" aria-label="Сторінки анкет">
+          <span>Знайдено: {profileCount}</span>
+          <button className="sv-outline" disabled={loading || page === 0} onClick={() => setPage(p => p - 1)}>Попередні</button>
+          <span>Сторінка {page + 1}</span>
+          <button className="sv-outline" disabled={loading || (page + 1) * 50 >= profileCount} onClick={() => setPage(p => p + 1)}>Наступні</button>
+        </div>
+      </>}
       {error ? (
         <ErrorState retry={() => setRevision((x) => x + 1)} />
       ) : loading ? (
@@ -110,23 +137,8 @@ export default function Moderation({ onChange }: { onChange: () => void }) {
         <div className="sv-feature-stack">
           {tab === "profiles" && (
             <>
-              <label className="sv-admin-search">
-                Знайти анкету
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Ім’я або місто. Без пошуку — нові анкети."
-                />
-              </label>
-              {profiles
-                .filter((p) =>
-                  search
-                    ? `${p.name} ${p.city}`
-                        .toLocaleLowerCase("uk")
-                        .includes(search.toLocaleLowerCase("uk"))
-                    : p.membership_status === "pending",
-                )
-                .map((p) => (
+
+              {profiles.map((p) => (
                   <article key={p.id} className="sv-feature-box">
                     <div className="sv-list-row">
                       <MemberAvatar profile={p} />

@@ -49,11 +49,10 @@ export function EntryExtras({
       )}
       {membership?.needs_greeter && membership.status !== "rejected" && (
         <p className="sv-notice">
-          Тебе зустріне{" "}
-          {membership.greeter_id
-            ? (profiles[membership.greeter_id]?.name ?? "організаторка")
-            : "організаторка"}
-          . Після підтвердження участі узгодьте деталі в чаті.
+          {membership.greeter_id && profiles[membership.greeter_id]?.membership_status === "approved"
+            ? `Тебе зустріне ${profiles[membership.greeter_id].name}.`
+            : "Уточни в організаторки, хто тебе зустріне."}
+          {" "}Після підтвердження участі узгодьте деталі в чаті.
         </p>
       )}
       {entry.starts_at && (

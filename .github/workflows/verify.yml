@@ -1,0 +1,61 @@
+name: Verify SVOYA
+on:
+  pull_request:
+  push:
+    branches: ['fix/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: svoya-verify-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:db
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm audit --audit-level=moderate
+  isolated-supabase:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start empty local stack without displaying temporary keys
+        run: |
+          if ! npm run local:start > /tmp/svoya-start.log 2>&1; then
+            tail -100 /tmp/svoya-start.log
+            exit 1
+          fi
+      - run: npm run test:integration
+      - name: Install isolated browser test engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Verify desktop and mobile browser flows
+        run: npm run test:browser
+      - name: Keep browser screenshots and failure reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: svoya-browser-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Stop isolated stack
+        if: always()
+        run: npm run local:stop

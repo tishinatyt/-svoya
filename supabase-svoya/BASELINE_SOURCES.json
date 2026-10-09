@@ -1,0 +1,12 @@
+{
+  "source_commit": "6d586d5c49af3a25e6f4aba67dd04106653fb0ab",
+  "fresh_databases_only": true,
+  "files": [
+    "docs/original-db/svoya-schema.sql",
+    "docs/original-db/svoya-photos.sql",
+    "docs/original-db/svoya-notifications.sql",
+    "supabase/migrations/20261007072000_svoya_club_membership_and_community.sql",
+    "supabase/migrations/20261007073859_svoya_community_access_hardening.sql",
+    "supabase/migrations/20261007074547_svoya_profile_auth_initplan.sql"
+  ]
+}

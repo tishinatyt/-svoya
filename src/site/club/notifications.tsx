@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { clubDb } from "@/lib/club-db";
+import { clubDb, clubConfig } from "@/lib/club-db";
 import "./notifications.css";
 type Notice = {
   id: string;
@@ -32,8 +32,7 @@ type Notice = {
   created_at: string;
   read_at: string | null;
 };
-const pushUrl =
-  "https://pqasdmiqnlyyjwmmqeyc.supabase.co/functions/v1/svoya-push";
+const getPushUrl = () => clubConfig().pushUrl;
 function supportsPush() {
   return (
     typeof window !== "undefined" &&
@@ -48,13 +47,14 @@ export async function disableDevicePush(userId: string) {
   const reg = await navigator.serviceWorker.getRegistration(siteUrl("/"));
   const sub = await reg?.pushManager.getSubscription();
   if (!sub) return;
-  const result = await clubDb()
-    .from("svoya_push_subscriptions")
-    .delete()
-    .eq("user_id", userId)
-    .eq("endpoint", sub.endpoint);
-  if (result.error) throw result.error;
-  await sub.unsubscribe();
+  const cleanup = clubDb().from("svoya_push_subscriptions").delete()
+    .eq("user_id", userId).eq("endpoint", sub.endpoint);
+  // Browser cancellation and server cleanup are independent, including offline.
+  const results = await Promise.allSettled([cleanup, sub.unsubscribe()]);
+  for (const result of results) {
+    if (result.status === "rejected") throw result.reason;
+    if (typeof result.value === "object" && result.value?.error) throw result.value.error;
+  }
 }
 export function NotificationCenter({
   userId,
@@ -226,7 +226,7 @@ export function NotificationCenter({
         setDevice(permission === "denied" ? "blocked" : "off");
         return;
       }
-      const config = await fetch(pushUrl);
+      const config = await fetch(getPushUrl());
       if (!config.ok)
         throw new Error("Не вдалося підключити сповіщення. Спробуй пізніше.");
       const parsed = (await config.json()) as { publicKey?: unknown };

@@ -30,10 +30,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify navigation and community behavior
+      - name: Verify behavior, database rules and types
         run: |
-          npm run test:paths
-          npm run test:community
+          npm test
+          npm run test:db
+          npm run typecheck
 
       - name: Build
         run: npm run build
