@@ -13,7 +13,7 @@
     "test:db": "node scripts/test-db.mjs",
     "test:integration": "node scripts/test-integration.mjs",
     "typecheck": "tsc -b",
-    "local:start": "supabase start --workdir supabase-svoya --exclude realtime,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
+    "local:start": "supabase start --workdir supabase-svoya --exclude realtime,imgproxy,postgres-meta,studio,logflare,vector,supavisor",
     "local:stop": "supabase stop --workdir supabase-svoya",
     "local:env": "node scripts/local-env.mjs",
     "test:browser": "playwright test"

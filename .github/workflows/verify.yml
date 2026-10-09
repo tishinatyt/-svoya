@@ -41,6 +41,7 @@ jobs:
             tail -100 /tmp/svoya-start.log
             exit 1
           fi
+      - run: node scripts/test-username-integration.mjs
       - run: npm run test:integration
       - name: Install isolated browser test engines
         run: npx playwright install --with-deps chromium webkit

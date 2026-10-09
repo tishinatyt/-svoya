@@ -30,6 +30,7 @@ export default defineConfig({
     reuseExistingServer: false,
     env: {
       VITE_SVOYA_ENV: 'test',
+      VITE_SVOYA_SIGNUP_MODE: 'username',
       VITE_SUPABASE_URL: stack.API_URL,
       VITE_SUPABASE_ANON_KEY: stack.ANON_KEY,
       VITE_BASE_PATH: '/-svoya/',

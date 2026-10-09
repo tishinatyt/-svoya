@@ -85,7 +85,7 @@ test('landing, club sections, guest access and dialog fit the viewport', async (
   }
   await page.getByRole('button', { name: 'Створити профіль', exact: true }).click();
   const dialog = page.getByRole('dialog');
-  await expect(dialog.getByLabel('Email', { exact: true })).toBeVisible();
+  await expect(dialog.getByLabel(/^Логін/)).toBeVisible();
   await fitsViewport(page, dialog);
   await capture(page, info, 'auth');
   await page.keyboard.press('Shift+Tab');
@@ -99,10 +99,10 @@ test('real login, required profile photo, gallery changes and logout', async ({ 
   const created = await admin.auth.admin.createUser({ email: address, password: secret, email_confirm: true });
   expect(created.error).toBeNull();
   const dialog = await openLogin(page);
-  await dialog.getByLabel('Email', { exact: true }).fill(address);
+  await dialog.getByLabel('Логін або email', { exact: true }).fill(address);
   await dialog.getByLabel(/^Пароль/).fill('incorrect-password');
   await dialog.getByRole('button', { name: 'Увійти', exact: true }).click();
-  await expect(page.getByText('Перевір email і пароль.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Перевір логін або email і пароль.', { exact: true })).toBeVisible();
   await dialog.getByLabel(/^Пароль/).fill(secret);
   await dialog.getByRole('button', { name: 'Увійти', exact: true }).click();
   await expect(dialog.getByLabel('Ім’я', { exact: true })).toBeVisible();
@@ -131,21 +131,20 @@ test('real login, required profile photo, gallery changes and logout', async ({ 
   await logout(page);
 });
 
-test('signup email confirmation, logout without profile and password recovery', async ({ page }) => {
+test('legacy email login, logout without profile and password recovery', async ({ page }) => {
   const address = email(), firstPassword = password(), nextPassword = password();
-  await page.goto(club);
-  await page.getByRole('button', { name: 'Приєднатися', exact: true }).click();
-  let dialog = page.getByRole('dialog');
-  await dialog.getByLabel('Email', { exact: true }).fill(address);
+  const seeded = await admin.auth.admin.createUser({email:address,password:firstPassword,email_confirm:true});
+  expect(seeded.error).toBeNull();
+  let dialog = await openLogin(page);
+  await dialog.getByLabel('Логін або email', {exact:true}).fill(address);
   await dialog.getByLabel(/^Пароль/).fill(firstPassword);
-  await dialog.getByRole('button', { name: 'Створити акаунт', exact: true }).click();
-  await expect(dialog.getByRole('status')).toContainText('Ми надіслали лист');
-  await page.goto(await localEmailLink(address, 'signup'));
-  await expect(page.getByRole('heading', { name: 'Твій профіль збережений' })).toBeVisible();
+  await dialog.getByRole('button',{name:'Увійти',exact:true}).click();
+  await expect(dialog.getByLabel('Ім’я',{exact:true})).toBeVisible();
+  await closeDialog(page);
   await logout(page);
   dialog = await openLogin(page);
   await dialog.getByRole('button', { name: 'Забула пароль', exact: true }).click();
-  await dialog.getByLabel('Email', { exact: true }).fill(address);
+  await dialog.getByLabel('Логін або email', { exact: true }).fill(address);
   await dialog.getByRole('button', { name: 'Відновити доступ' }).click();
   await expect(dialog.getByRole('status')).toContainText('Якщо для цього email');
   await page.goto(await localEmailLink(address, 'recovery'));
@@ -156,8 +155,52 @@ test('signup email confirmation, logout without profile and password recovery', 
   await closeDialog(page);
   await logout(page);
   dialog = await openLogin(page);
-  await dialog.getByLabel('Email', { exact: true }).fill(address);
+  await dialog.getByLabel('Логін або email', { exact: true }).fill(address);
   await dialog.getByLabel(/^Пароль/).fill(nextPassword);
   await dialog.getByRole('button', { name: 'Увійти', exact: true }).click();
   await expect(dialog.getByLabel('Ім’я', { exact: true })).toBeVisible();
+});
+
+test('username signup, password confirmation, duplicate protection and repeat login', async ({page}, info) => {
+  const username=`qa_${randomUUID().replaceAll('-','').slice(0,16)}`, secret=password();
+  await page.goto(club);
+  await page.getByRole('button',{name:'Приєднатися',exact:true}).click();
+  let dialog=page.getByRole('dialog');
+  await expect(dialog.getByText('Тимчасово реєструємо без email.',{exact:false})).toBeVisible();
+  await expect(dialog.locator('input[type="email"]')).toHaveCount(0);
+  await dialog.getByLabel(/^Логін/).fill(username);
+  await dialog.getByLabel(/^Пароль/).fill(secret);
+  await dialog.getByLabel('Повтори пароль',{exact:true}).fill(password());
+  await dialog.getByRole('button',{name:'Створити акаунт',exact:true}).click();
+  await expect(page.getByText('Паролі не збігаються. Перевір повторення.',{exact:true})).toBeVisible();
+  await dialog.getByLabel('Повтори пароль',{exact:true}).fill(secret);
+  await capture(page,info,'username-signup');
+  await dialog.getByRole('button',{name:'Створити акаунт',exact:true}).click();
+  await expect(dialog.getByLabel('Ім’я',{exact:true})).toBeVisible();
+  await dialog.getByLabel('Ім’я',{exact:true}).fill('Учасниця з логіном');
+  await dialog.getByLabel('Додати фотографії профілю').setInputFiles(resolve('public/svoya-icon-192.png'));
+  await dialog.getByRole('checkbox').check();
+  await dialog.getByRole('button',{name:'Приєднатися до клубу',exact:true}).click();
+  await expect(dialog).toHaveCount(0);
+  await page.goto(`${club}?section=profile`);
+  await expect(page.getByText(`Логін: ${username}`,{exact:true})).toBeVisible();
+  await expect(page.getByText(/Анкета на перевірці/)).toBeVisible();
+  await expect(page.getByText(/login\.svoya\.invalid/)).toHaveCount(0);
+  await logout(page);
+  await page.getByRole('button',{name:'Створити профіль',exact:true}).click();
+  dialog=page.getByRole('dialog');
+  await dialog.getByLabel(/^Логін/).fill(username.toUpperCase());
+  const alternative=password();
+  await dialog.getByLabel(/^Пароль/).fill(alternative);
+  await dialog.getByLabel('Повтори пароль',{exact:true}).fill(alternative);
+  await dialog.getByRole('button',{name:'Створити акаунт',exact:true}).click();
+  await expect(page.getByText('Цей логін уже зайнятий. Обери інший або увійди до свого акаунта.',{exact:true})).toBeVisible();
+  await dialog.getByRole('button',{name:'Вхід',exact:true}).click();
+  await dialog.getByLabel('Логін або email',{exact:true}).fill(username.toUpperCase());
+  await dialog.getByLabel(/^Пароль/).fill(secret);
+  await dialog.getByRole('button',{name:'Увійти',exact:true}).click();
+  await expect(dialog.getByLabel('Ім’я',{exact:true})).toBeVisible();
+  await closeDialog(page);
+  await page.goto(`${club}?section=profile`);
+  await expect(page.getByText(`Логін: ${username}`,{exact:true})).toBeVisible();
 });
