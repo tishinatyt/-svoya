@@ -43,6 +43,20 @@ Baseline і загальний `supabase db push` для shared-проєкту �
 
 ## Перевірки й повернення email-реєстрації
 
+PR #3 об'єднано з main. Повний [CI](https://github.com/tishinatyt/-svoya/actions/runs/37929804497)
+успішний для коміту `61e0689e56de13d501a688585274f255df1adf99`:
+20 тестів коду, SQL і справжні серверні сценарії, 12/12 браузерних перевірок.
+Збереження старого швидкого профілю підтверджене незмінними UUID, фото й анкетою.
+
+Робочий сервер оновлено 9 жовтня: міграція
+`20261009123158_svoya_username_signup_limits`, Edge Function `svoya-register`
+ACTIVE v1 з `verify_jwt=true`. Без створення робочих тестових акаунтів перевірено
+доступність функції, CORS і відхилення некоректного логіна. RLS увімкнено;
+anon/authenticated не можуть викликати лічильник, service_role може.
+Єдине нове INFO advisors — [RLS без політик](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy)
+на навмисно закритій таблиці `svoya_private.signup_limits`. Інші функції та
+політики спільного проєкту не змінилися.
+
 20 тестів коду, SQL-права та межі лімітів; інтеграція справжньої локальної
 Edge Function/Auth/Storage; браузерні сценарії нового логіна й старого email.
 Тестові акаунти створюються лише в ізольованому локальному Supabase.
