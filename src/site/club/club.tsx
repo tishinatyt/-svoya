@@ -1,3 +1,6 @@
+import { allPages, entriesByIds, mergeEntries } from "@/lib/club-queries";
+import { endClubSession } from "@/lib/club-session";
+import { useCatalogue } from "./features/use-catalogue";
 import { siteUrl } from "@/lib/site-path";
 ("use client");
 import {
@@ -231,7 +234,10 @@ export default function Club() {
   const [city, setCity] = useState("Чернігів");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("Усі");
-  const [entries, setEntries] = useState<Entry[]>([]);
+  const [contextEntries, setEntries] = useState<Entry[]>([]);
+  const [revision, setRevision] = useState(0);
+  const catalogue = useCatalogue(section, city, query, filter, revision);
+  const entries = mergeEntries(catalogue.items, contextEntries);
   const [members, setMembers] = useState<Membership[]>([]);
   const [requests, setRequests] = useState<ClubRequest[]>([]);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
@@ -280,13 +286,9 @@ export default function Club() {
         data: { session },
       } = await db.auth.getSession();
       const u = session?.user ?? null;
-      const es = await db
-        .from("svoya_entries")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(400);
-      if (es.error) throw es.error;
-      const countsResult = await db.rpc("svoya_entry_counts");
+
+      const countsResult = await allPages<{ entry_id: string; joined: number; waiting: number }>((from, to) => db.rpc("svoya_entry_counts").order("entry_id").range(from, to))
+        .then(data => ({ data, error: null })).catch(error => ({ data: [], error }));
       if (!countsResult.error && g === generation.current)
         setCounts(
           Object.fromEntries(
@@ -306,11 +308,8 @@ export default function Club() {
       if (u) {
         const [p, m, r, a] = await Promise.all([
           db.from("svoya_profiles").select("*").eq("id", u.id).maybeSingle(),
-          db.from("svoya_memberships").select("*"),
-          db
-            .from("svoya_requests")
-            .select("*")
-            .order("created_at", { ascending: false }),
+          allPages<Membership>((from, to) => db.from("svoya_memberships").select("*").order("entry_id").order("user_id").range(from, to)).then(data => ({ data, error: null })),
+          allPages<ClubRequest>((from, to) => db.from("svoya_requests").select("*").order("created_at").order("id").range(from, to)).then(data => ({ data, error: null })),
           db.from("svoya_admins").select("user_id").eq("user_id", u.id),
         ]);
         for (const q of [p, m, r, a]) if (q.error) throw q.error;
@@ -327,6 +326,12 @@ export default function Club() {
           rps = rr.data ?? [];
         }
       }
+      const entryId = new URLSearchParams(location.search).get("entry");
+      const [related, owned] = await Promise.all([
+        entriesByIds(db, [...ms.map(m => m.entry_id), ...rs.map(r => r.entry_id), ...rps.map(r => r.entry_id), ...(entryId ? [entryId] : [])]),
+        u ? allPages<Entry>((from, to) => db.from("svoya_entries").select("*").eq("owner_id", u.id).order("created_at").order("id").range(from, to)) : Promise.resolve([]),
+      ]);
+      const es = { data: mergeEntries(related, owned) };
       const ids = [
         ...new Set(
           [
@@ -337,11 +342,12 @@ export default function Club() {
           ].filter(Boolean),
         ),
       ] as string[];
-      const people =
-        u && ids.length
-          ? await db.from("svoya_profiles").select("*").in("id", ids)
-          : { data: [], error: null };
-      if (people.error) throw people.error;
+      const people: Profile[] = [];
+      if (u) for (let i = 0; i < ids.length; i += 100) {
+        const result = await db.from("svoya_profiles").select("*").in("id", ids.slice(i, i + 100));
+        if (result.error) throw result.error;
+        people.push(...(result.data ?? []));
+      }
       if (!mounted.current || g !== generation.current) return;
       setUser(u);
       setProfile(ps);
@@ -350,14 +356,13 @@ export default function Club() {
       setAdmin(isAdmin);
       setReports(rps);
       setProfiles(
-        Object.fromEntries((people.data ?? []).map((p: Profile) => [p.id, p])),
+        Object.fromEntries(people.map((p: Profile) => [p.id, p])),
       );
       setEntries(es.data ?? []);
-      setDetail((old) =>
-        old
-          ? ((es.data ?? []).find((e: Entry) => e.id === old.id) ?? null)
-          : null,
-      );
+      setRevision(value => value + 1);
+      // Do not reopen a dialog that was closed while the request was running.
+      if (new URLSearchParams(location.search).get("entry") === entryId)
+        setDetail(entryId ? es.data.find(e => e.id === entryId) ?? null : null);
     } catch (e) {
       if (g === generation.current)
         setError("Не вдалося завантажити клуб. Спробуйте оновити.");
@@ -406,12 +411,25 @@ export default function Club() {
       subscription.unsubscribe();
     };
   }, [db, load]);
+
   useEffect(() => {
-    if (!entries.length) return;
-    const id = new URLSearchParams(location.search).get("entry");
-    if (id) setDetail(entries.find((e) => e.id === id) ?? null);
-  }, [entries]);
+    if (!user) return;
+    let active = true;
+    void (async () => {
+      const ids = [...new Set(catalogue.items.map(e => e.owner_id).filter(Boolean))] as string[];
+      const rows: Profile[] = [];
+      for (let i = 0; i < ids.length; i += 100) {
+        const result = await db.from("svoya_profiles").select("*").in("id", ids.slice(i, i + 100));
+        if (result.error || !active) return;
+        rows.push(...(result.data ?? []));
+      }
+      if (active) setProfiles(old => ({ ...old, ...Object.fromEntries(rows.map(p => [p.id, p])) }));
+    })().catch(() => { /* Cards retain their neutral fallback when offline. */ });
+    return () => { active = false; };
+  }, [db, user?.id, catalogue.items]);
+
   function go(s: Section) {
+    setDetail(null);
     setSection(s);
     setFilter("Усі");
     setQuery("");
@@ -420,6 +438,7 @@ export default function Club() {
   }
   function open(e: Entry) {
     setDetail(e);
+    setEntries(old => mergeEntries(old, [e]));
     setNeedsGreeter(false);
     history.replaceState(
       null,
@@ -750,7 +769,7 @@ export default function Club() {
   }
   const isCatalogue =
     section === "feed" || Object.keys(labels).includes(section);
-  const currentEntries = entries.filter(
+  const currentEntries = catalogue.items.filter(
     (e) =>
       e.status === "published" &&
       (!e.expires_at || Date.parse(e.expires_at) > Date.now()) &&
@@ -982,14 +1001,15 @@ export default function Club() {
             onOpen={(id, link) => {
               if (link?.includes("section=discover")) {
                 go("discover");
+                setRevision(value => value + 1);
                 return;
               }
-              void load();
-              const e = entries.find((x) => x.id === id);
-              if (e) open(e);
-              else {
+              if (id) {
+                history.replaceState(null, "", siteUrl(`/club?section=${section}&entry=${encodeURIComponent(id)}`));
+                void load();
+              } else {
                 go("profile");
-                toast.info("Деталі доступні у твоїх заявках.");
+                void load();
               }
             }}
           />
@@ -1021,6 +1041,7 @@ export default function Club() {
           </nav>
           {section === "discover" && (
             <People
+              refreshKey={revision}
               profile={profile}
               onLogin={editProfile}
               onChange={() => void load()}
@@ -1028,7 +1049,7 @@ export default function Club() {
           )}
           {section === "calendar" && (
             <Calendar
-              entries={entries.filter(
+              entries={mergeEntries(catalogue.items, contextEntries).filter(
                 (e) => city === "Усі міста" || e.city === city,
               )}
               members={members}
@@ -1036,6 +1057,11 @@ export default function Club() {
               onOpen={open}
             />
           )}
+          {section === "calendar" && <div className="sv-inline-actions">
+            {catalogue.loading && <p role="status">Завантажуємо зустрічі…</p>}
+            {catalogue.error && <button className="sv-outline" onClick={catalogue.retry}>Повторити завантаження</button>}
+            {catalogue.more && <button className="sv-outline" disabled={catalogue.loading} onClick={catalogue.next}>Показати більше зустрічей</button>}
+          </div>}
           {section === "benefits" && (
             <Benefits profile={profile} onLogin={editProfile} city={city} />
           )}
@@ -1215,12 +1241,13 @@ export default function Club() {
                   ))}
                 </TabsList>
               </Tabs>
-              {loading && !entries.length ? (
+              {(loading || catalogue.loading) && !catalogue.items.length ? (
                 <div className="sv-loading" role="status">
                   Завантажуємо життя клубу…
                 </div>
               ) : (
                 <>
+                  {catalogue.error && <div className="sv-error" role="alert">Не вдалося завантажити публікації. <button onClick={catalogue.retry}>Повторити</button></div>}
                   {real.length > 0 && (
                     <div className="sv-grid">
                       {real.map((e) => (
@@ -1228,7 +1255,7 @@ export default function Club() {
                       ))}
                     </div>
                   )}
-                  {!real.length && !error && (
+                  {!real.length && !error && !catalogue.error && (
                     <div className="sv-launch-note">
                       <Flower2 size={22} />
                       <div>
@@ -1267,7 +1294,8 @@ export default function Club() {
                       </div>
                     </>
                   )}
-                  {!currentEntries.length && !error && (
+                  {catalogue.more && <button className="sv-outline" disabled={catalogue.loading} onClick={catalogue.next}>{catalogue.loading ? "Завантажуємо…" : "Показати більше"}</button>}
+                  {!currentEntries.length && !error && !catalogue.error && (
                     <Empty
                       kind={section === "feed" ? "event" : (section as Kind)}
                       text={
@@ -1591,6 +1619,10 @@ export default function Club() {
                     </TabsContent>
                   )}
                 </Tabs>
+
+              </>
+            ))}
+          {section === "profile" && user && (
                 <button
                   className="sv-rule-link sv-signout"
                   onClick={() =>
@@ -1600,9 +1632,11 @@ export default function Club() {
                         ? "Це швидкий профіль. Після виходу відновити доступ до нього не вдасться."
                         : "Згодом можна буде увійти знову.",
                       action: async () => {
-                        if (user) await disableDevicePush(user.id);
-                        const r = await db.auth.signOut();
-                        if (r.error) throw r.error;
+                        const result = await endClubSession(
+                          () => user ? disableDevicePush(user.id) : Promise.resolve(),
+                          () => db.auth.signOut({ scope: "local" }),
+                        );
+                        if (result.pushCleanupFailed) toast.info("Вихід виконано. Налаштування push не вдалося оновити.");
                         setProfile(null);
                         setUser(null);
                         closeDetail();
@@ -1614,8 +1648,7 @@ export default function Club() {
                   <LogOut size={17} />
                   Вийти
                 </button>
-              </>
-            ))}
+          )}
           <div className="sv-footer">
             <span>СВОЯ — жіночий клуб. Подруги та спільні плани.</span>
             <button onClick={() => setModal("rules")}>Правила спільноти</button>
