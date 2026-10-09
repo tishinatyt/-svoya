@@ -70,7 +70,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
-import { clubDb } from "@/lib/club-db";
+import { clubDb, needsClubPasswordRecovery, finishClubPasswordRecovery } from "@/lib/club-db";
 import { cataloguePhoto } from "@/lib/catalogue-photos";
 import {
   labels,
@@ -350,6 +350,10 @@ export default function Club() {
       }
       if (!mounted.current || g !== generation.current) return;
       setUser(u);
+      if (u && needsClubPasswordRecovery(u.id)) {
+        setRecovery(true);
+        setModal("auth");
+      }
       setProfile(ps);
       setMembers(ms);
       setRequests(rs);
@@ -2146,7 +2150,13 @@ export default function Club() {
       <Dialog
         open={modal !== null}
         onOpenChange={(v) => {
-          if (!v && !busy) setModal(null);
+          if (!v && !busy) {
+            if (modal === "auth" && recovery) {
+              finishClubPasswordRecovery();
+              setRecovery(false);
+            }
+            setModal(null);
+          }
         }}
       >
         <DialogContent className="sv-dialog">
@@ -2178,6 +2188,7 @@ export default function Club() {
                   user={user}
                   recovery={recovery}
                   onComplete={() => {
+                    if (recovery) finishClubPasswordRecovery();
                     setRecovery(false);
                     void load();
                   }}

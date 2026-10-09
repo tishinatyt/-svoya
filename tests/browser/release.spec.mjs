@@ -27,7 +27,7 @@ async function fitsViewport(page, locator = page.locator('html')) {
   expect(size.scroll, 'Content must fit without horizontal scrolling').toBeLessThanOrEqual(size.client + 1);
 }
 async function capture(page, info, name) {
-  await page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true });
+  await page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true, animations: 'disabled' });
 }
 async function openLogin(page) {
   await page.goto(club);
