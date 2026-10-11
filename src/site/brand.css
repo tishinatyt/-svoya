@@ -2,44 +2,24 @@
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 10px;
-  color: #67243d;
+  width: 200px;
+  max-width: 100%;
   text-decoration: none;
 }
-.sv-brand-mark {
+.sv-brand-logo {
   display: block;
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  height: auto;
   object-fit: contain;
 }
-.sv-brand-copy { display: flex; flex-direction: column; gap: 5px; }
-.sv-brand-copy strong {
-  font: 400 34px/.95 Georgia, 'Times New Roman', serif;
-  letter-spacing: .06em;
-}
-.sv-brand-copy small {
-  font: 600 11px/1.25 Arial, Helvetica, sans-serif;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
 .sv-brand:focus-visible { outline: 2px solid #b45e7b; outline-offset: 6px; }
-.sv-brand-inverse { color: #fff7f0; }
-.sv-brand-inverse .sv-brand-mark { background: #fff7f0; border-radius: 8px; padding: 4px; }
-.sv-sidebar-brand { margin: 0 4px 29px; gap: 9px; }
-.sv-sidebar-brand .sv-brand-mark { width: 42px; height: 42px; }
-.sv-sidebar-brand .sv-brand-copy strong { font-size: 29px; }
-.sv-sidebar-brand .sv-brand-copy small { font-size: 10px; letter-spacing: .09em; }
+/* The approved silhouette stays legible on the burgundy sidebar. */
+.sv-brand-inverse .sv-brand-logo { filter: brightness(0) invert(1); }
+.sv-sidebar-brand { width: 180px; margin: 0 4px 29px; }
 .sv-mobile-brand { display: none; }
 @media (max-width: 900px) {
-  .sv-mobile-brand { display: inline-flex; margin-right: auto; gap: 5px; }
-  .sv-mobile-brand .sv-brand-mark { width: 30px; height: 30px; }
-  .sv-mobile-brand .sv-brand-copy { gap: 4px; }
-  .sv-mobile-brand .sv-brand-copy strong { font-size: 23px; }
-  .sv-mobile-brand .sv-brand-copy small { font-size: 9px; letter-spacing: .035em; }
+  .sv-mobile-brand { display: inline-flex; width: 126px; margin-right: auto; }
 }
 @media (max-width: 700px) {
-  .home-brand { gap: 6px; }
-  .home-brand .sv-brand-mark { width: 36px; height: 36px; }
-  .home-brand .sv-brand-copy strong { font-size: 27px; }
-  .home-brand .sv-brand-copy small { font-size: 10px; letter-spacing: .08em; }
+  .home-brand { width: 164px; }
 }
