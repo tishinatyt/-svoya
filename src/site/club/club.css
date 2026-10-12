@@ -40,3 +40,20 @@
   .sv-page-heading { display: block; }
   .sv-page-heading > .sv-btn { margin-top: 17px; }
 }
+
+/* Meeting company and discussion stay compact and visible in every live card. */
+.sv-card-community{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #eee8eb;padding-top:12px}
+.sv-card-people{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+.sv-avatar-stack{display:flex;align-items:center;padding-left:3px}
+.sv-attendee-avatar,.sv-avatar-more{position:relative;flex:none;border:2px solid #fff;border-radius:50%;margin-left:-3px;min-width:36px;height:36px;background:#eedfe6;color:#77364e}
+.sv-attendee-avatar .sv-avatar{width:32px;height:32px;font:15px Arial,sans-serif}
+.sv-attendee-avatar:hover{z-index:1;box-shadow:0 0 0 2px #b98ca0}
+.sv-avatar-more{font-size:12px;padding:0 6px}
+.sv-host-dot{position:absolute;right:-1px;bottom:0;width:9px;height:9px;border:2px solid white;border-radius:50%;background:#a4743e}
+.sv-people-link{display:flex;align-items:center;gap:7px;text-align:left;font-size:12px;color:#6c3a50;line-height:1.35}
+.sv-people-link small{display:block;color:#8b7680;font-size:11px;margin-top:2px}
+.sv-card-chat{display:flex;align-items:center;justify-content:center;gap:7px;flex:none;min-height:40px;padding:8px 13px;border:1px solid #d9bdc9;border-radius:100px;background:#fcf2f6;color:#732c43;font-size:13px}
+.sv-card-chat:hover{background:#f0dee6}
+.sv-chat-gate{padding:26px 16px;text-align:center;background:#f8eff3;border-radius:12px;margin-top:16px;color:#795366}
+.sv-chat-gate>svg{margin:0 auto 12px}.sv-chat-gate h3{font-size:20px;font-weight:600}.sv-chat-gate p{font-size:15px;line-height:1.6;margin:12px auto 20px;max-width:420px}
+.sv-entry-people-list{display:grid;gap:10px;padding:15px 0}.sv-entry-people-list>.sv-person-link{padding:10px;border:1px solid #e6d6de;border-radius:10px}.sv-dialog [data-slot=tabs-list]{max-width:100%;overflow-x:auto;justify-content:flex-start}.sv-dialog [data-slot=tabs-trigger]{flex-shrink:0}

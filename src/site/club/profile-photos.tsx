@@ -92,7 +92,7 @@ export function MemberAvatar({
   profile,
   large = false,
 }: {
-  profile?: Profile | null;
+  profile?: Pick<Profile, "name" | "photo_paths"> | null;
   large?: boolean;
 }) {
   const path = profile?.photo_paths?.[0];

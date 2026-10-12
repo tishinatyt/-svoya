@@ -106,6 +106,7 @@ import { Benefits, Stories } from "./features/community-content";
 import Moderation from "./features/moderation";
 import { MemberTitleBadge, MemberTitleGuide } from './features/member-titles';
 import { EntryExtras, GreeterSelect } from "./features/entry-extras";
+import { EntryPeopleBar, useEntryPeople } from "./features/entry-people";
 import { action, publicPhoto, messageFor } from "./features/shared";
 import "./features/features.css";
 type Section =
@@ -255,6 +256,7 @@ export default function Club() {
   const mounted = useRef(true);
   const generation = useRef(0);
   const [detail, setDetail] = useState<Entry | null>(null);
+  const [detailTab, setDetailTab] = useState("about");
   const [modal, setModal] = useState<
     "auth" | "create" | "rules" | "report" | null
   >(null);
@@ -278,6 +280,10 @@ export default function Club() {
   const [chatError, setChatError] = useState("");
   const [messageLoading, setMessageLoading] = useState(false);
   const db = clubDb();
+  const people = useEntryPeople(
+    [...catalogue.items, ...(detail ? [detail] : [])].filter(e => !e.is_demo && ["event", "circle"].includes(e.kind)).map(e => e.id),
+    user?.id, profile?.membership_status === "approved", revision,
+  );
   const load = useCallback(async () => {
     const g = ++generation.current;
     setLoading(true);
@@ -366,8 +372,11 @@ export default function Club() {
       setEntries(es.data ?? []);
       setRevision(value => value + 1);
       // Do not reopen a dialog that was closed while the request was running.
-      if (new URLSearchParams(location.search).get("entry") === entryId)
+      if (new URLSearchParams(location.search).get("entry") === entryId) {
         setDetail(entryId ? es.data.find(e => e.id === entryId) ?? null : null);
+        const panel = new URLSearchParams(location.search).get("panel");
+        setDetailTab(panel && ["chat", "members", "requests"].includes(panel) ? panel : "about");
+      }
     } catch (e) {
       if (g === generation.current)
         setError("Не вдалося завантажити клуб. Спробуйте оновити.");
@@ -441,15 +450,20 @@ export default function Club() {
     history.replaceState(null, "", siteUrl(`/club?section=${s}`));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  function open(e: Entry) {
+  function open(e: Entry, tab = "about") {
     setDetail(e);
+    setDetailTab(tab);
     setEntries(old => mergeEntries(old, [e]));
     setNeedsGreeter(false);
     history.replaceState(
       null,
       "",
-      siteUrl(`/club?section=${section}&entry=${e.id}`),
+      siteUrl(`/club?section=${section}&entry=${e.id}${tab === "about" ? "" : `&panel=${tab}`}`),
     );
+  }
+  function changeDetailTab(tab: string) {
+    setDetailTab(tab);
+    if (detail) history.replaceState(null, "", siteUrl(`/club?section=${section}&entry=${detail.id}${tab === "about" ? "" : `&panel=${tab}`}`));
   }
   function closeDetail() {
     setDetail(null);
@@ -587,7 +601,14 @@ export default function Club() {
   }
   function showMember(id: string) {
     const p = profiles[id];
-    if (p) setViewingProfile(p);
+    if (p) { setViewingProfile(p); return; }
+    void run(async () => {
+      const result = await db.from("svoya_profiles").select("*").eq("id", id).maybeSingle();
+      if (result.error) throw result.error;
+      if (!result.data) { toast.info("Профіль зараз недоступний."); return; }
+      setProfiles(old => ({ ...old, [id]: result.data }));
+      setViewingProfile(result.data);
+    });
   }
   async function join(e: Entry) {
     if (!requireProfile()) return;
@@ -697,13 +718,17 @@ export default function Club() {
     ["event", "circle"].includes(detail.kind) &&
     (isOwner || activeMembership?.status === "joined");
   const detailId = detail?.id;
+  const activeChat = useRef<string | null>(null);
+  activeChat.current = canChat && detailTab === "chat" ? detailId ?? null : null;
+  useEffect(() => { setMessage(""); }, [detailId]);
   useEffect(() => {
-    let cancelled = false;
+    let cancelled = false, fetching = false;
     setMessages([]);
     setChatError("");
-    if (!detailId || !canChat) return;
+    if (!detailId || !canChat || detailTab !== "chat") return;
     async function fetchChat() {
-      if (document.visibilityState === "hidden") return;
+      if (fetching || document.visibilityState === "hidden") return;
+      fetching = true;
       setMessageLoading(true);
       const r = await db
         .from("svoya_messages")
@@ -711,10 +736,11 @@ export default function Club() {
         .eq("entry_id", detailId)
         .order("created_at", { ascending: false })
         .limit(100);
+      fetching = false;
       if (cancelled) return;
       if (r.error) setChatError("Не вдалося завантажити повідомлення.");
       else {
-        setMessages((r.data ?? []).reverse());
+        setMessages(old => [...new Map([...old, ...(r.data ?? [])].map((m: Message) => [m.id, m])).values()].sort((a, b) => a.created_at.localeCompare(b.created_at)).slice(-100));
         setChatError("");
         const ids = [...new Set((r.data ?? []).map((m: Message) => m.user_id))];
         if (ids.length) {
@@ -734,23 +760,26 @@ export default function Club() {
       cancelled = true;
       clearInterval(timer);
     };
-  }, [detailId, canChat, db]);
+  }, [detailId, detailTab, canChat, db]);
   async function sendMessage(e: FormEvent) {
     e.preventDefault();
-    if (!detail || !profile || !message.trim()) return;
+    if (!detail || !profile || !canChat || !message.trim()) return;
+    const entryId = detail.id;
     await run(async () => {
       const r = await db
         .from("svoya_messages")
         .insert({
-          entry_id: detail.id,
+          entry_id: entryId,
           user_id: profile.id,
           body: message.trim(),
         })
         .select()
         .single();
       if (r.error) throw r.error;
-      setMessages((old) => [...old, r.data]);
-      setMessage("");
+      if (activeChat.current === entryId) {
+        setMessages(old => [...new Map([...old, r.data].map((m: Message) => [m.id, m])).values()].sort((a, b) => a.created_at.localeCompare(b.created_at)).slice(-100));
+        setMessage("");
+      }
     });
   }
   async function report(e: FormEvent<HTMLFormElement>) {
@@ -894,6 +923,15 @@ export default function Club() {
             </button>
           </div>
         </div>
+        {!e.is_demo && ["event", "circle"].includes(e.kind) && (
+          <EntryPeopleBar
+            people={people.rows.filter(p => p.entry_id === e.id)}
+            joined={counts[e.id]?.joined ?? 0}
+            approved={profile?.membership_status === "approved"}
+            loading={people.loading} error={people.error}
+            onPerson={showMember} onMembers={() => open(e, "members")} onChat={() => open(e, "chat")}
+          />
+        )}
       </article>
     );
   }
@@ -1694,7 +1732,7 @@ export default function Club() {
                   ))}
                 </div>
               )}
-              <Tabs defaultValue="about" key={detail.id}>
+              <Tabs value={detailTab} onValueChange={changeDetailTab} key={detail.id}>
                 <TabsList variant="line">
                   <TabsTrigger value="about">
                     Про{" "}
@@ -1704,14 +1742,17 @@ export default function Club() {
                         ? "коло"
                         : "пропозицію"}
                   </TabsTrigger>
-                  {canChat && (
+                  {!detail.is_demo && ["event", "circle"].includes(detail.kind) && (
                     <TabsTrigger value="chat">
                       <MessageCircle size={15} />
                       Чат
                     </TabsTrigger>
                   )}
-                  {isOwner && ["event", "circle"].includes(detail.kind) && (
+                  {!detail.is_demo && ["event", "circle"].includes(detail.kind) && (
                     <TabsTrigger value="members">Учасниці</TabsTrigger>
+                  )}
+                  {isOwner && ["event", "circle"].includes(detail.kind) && (
+                    <TabsTrigger value="requests">Заявки</TabsTrigger>
                   )}
                 </TabsList>
                 <TabsContent value="about">
@@ -1792,7 +1833,7 @@ export default function Club() {
                       <p>
                         Це твоя публікація. Заявки доступні у профілі
                         {["event", "circle"].includes(detail.kind)
-                          ? " та у вкладці «Учасниці»"
+                          ? " та у вкладці «Заявки»"
                           : ""}
                         .
                       </p>
@@ -1955,8 +1996,16 @@ export default function Club() {
                     )}
                   </div>
                 </TabsContent>
-                {canChat && (
+                {!detail.is_demo && ["event", "circle"].includes(detail.kind) && (
                   <TabsContent value="chat">
+                    {!canChat ? (
+                      <div className="sv-chat-gate">
+                        <MessageCircle size={28} />
+                        <h3>Обговорення зустрічі</h3>
+                        <p>{!user ? "Увійди в клуб і приєднайся до зустрічі, щоб спілкуватися з учасницями." : profile?.membership_status !== "approved" ? "Чат стане доступним після схвалення анкети клубом і підтвердження участі організаторкою." : activeMembership?.status === "pending" ? "Твою заявку розглядає організаторка. Після підтвердження тут відкриється чат." : activeMembership?.status === "waitlisted" ? "Ти у листі очікування. Чат відкриється після підтвердження участі." : "Чат доступний організаторці та підтвердженим учасницям. Подай заявку на зустріч у вкладці з деталями."}</p>
+                        <button className="sv-btn" onClick={() => !user ? setModal("auth") : changeDetailTab("about")}>{!user ? "Увійти в клуб" : "До деталей зустрічі"}</button>
+                      </div>
+                    ) : <>
                     <p className="sv-muted">
                       Чат доступний організаторці та підтвердженим учасницям.
                       Нові повідомлення оновлюються автоматично.
@@ -2007,10 +2056,26 @@ export default function Club() {
                           </button>
                         </form>
                       )}
+                    </>}
+                  </TabsContent>
+                )}
+                {!detail.is_demo && ["event", "circle"].includes(detail.kind) && (
+                  <TabsContent value="members">
+                    {profile?.membership_status !== "approved" ? (
+                      <div className="sv-chat-gate"><Users size={28} /><p>Імена й фото учасниць доступні після входу та схвалення анкети клубом.</p><button className="sv-btn" onClick={() => setModal("auth")}>{user ? "Мій профіль" : "Увійти в клуб"}</button></div>
+                    ) : people.error ? (
+                      <div className="sv-error" role="alert">Не вдалося завантажити учасниць.<button onClick={people.retry}>Спробувати ще раз</button></div>
+                    ) : people.loading && !people.rows.some(p => p.entry_id === detail.id) ? <p className="sv-muted">Завантажуємо учасниць…</p> : (
+                      <div className="sv-entry-people-list">
+                        <p className="sv-muted">Організаторка та підтверджені учасниці. Натисни на фото, щоб познайомитися.</p>
+                        {people.rows.filter(p => p.entry_id === detail.id).map(p => <button key={p.user_id} className="sv-person-link" onClick={() => showMember(p.user_id)}><MemberAvatar profile={p} /><span>{p.name}<small>{p.is_host ? "Організаторка" : "Участь підтверджено"}</small></span></button>)}
+                        {!people.rows.some(p => p.entry_id === detail.id && !p.is_host) && <p className="sv-muted">Підтверджених учасниць поки немає.</p>}
+                      </div>
+                    )}
                   </TabsContent>
                 )}
                 {isOwner && (
-                  <TabsContent value="members">
+                  <TabsContent value="requests">
                     {members.filter((m) => m.entry_id === detail.id).length ===
                     0 ? (
                       <p className="sv-muted">
