@@ -5,29 +5,6 @@
   --sv-line: #e2dbd1;
   --sv-ink: #352a2c;
 }
-.sv-feature-nav {
-  display: flex;
-  gap: 7px;
-  flex-wrap: wrap;
-  margin: 0 0 28px;
-  border-bottom: 1px solid var(--sv-line);
-  padding: 0 0 14px;
-}
-.sv-feature-nav button {
-  padding: 8px 13px;
-  border-radius: 4px;
-  font-size: 13px;
-  color: #69575c;
-  border: 1px solid transparent;
-  background: transparent;
-}
-.sv-feature-nav button[aria-current="page"] {
-  background: var(--sv-wine);
-  color: white;
-}
-.sv-feature-nav button:hover {
-  border-color: #c0acae;
-}
 .sv-feature-heading {
   max-width: 730px;
   margin: 20px 0 30px;
@@ -639,18 +616,6 @@
   }
 }
 @media (max-width: 700px) {
-  .sv-feature-nav {
-    gap: 4px;
-    margin-bottom: 24px;
-    flex-wrap: nowrap;
-    overflow: auto;
-    padding-bottom: 12px;
-  }
-  .sv-feature-nav button {
-    white-space: nowrap;
-    font-size: 12px;
-    padding: 8px 10px;
-  }
   .sv-feature-heading h1 {
     font-size: 36px;
   }

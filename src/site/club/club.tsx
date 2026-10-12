@@ -32,6 +32,7 @@ import {
   X,
   RefreshCw,
   ShieldCheck,
+  Menu,
 } from "lucide-react";
 import {
   Dialog,
@@ -40,6 +41,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import {
   Select,
   SelectTrigger,
@@ -246,6 +248,8 @@ export default function Club() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [admin, setAdmin] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigation = [...navItems, ...(admin ? [{ id: "moderation" as const, label: "Модерація", icon: ShieldCheck }] : [])];
   const [reports, setReports] = useState<
     { id: string; entry_id: string; reason: string }[]
   >([]);
@@ -443,6 +447,7 @@ export default function Club() {
   }, [db, user?.id, catalogue.items]);
 
   function go(s: Section) {
+    setMobileMenuOpen(false);
     setDetail(null);
     setSection(s);
     setFilter("Усі");
@@ -966,7 +971,7 @@ export default function Club() {
           <SidebarGroup>
             <p className="sv-nav-caption">ТВОЄ МІСЦЕ</p>
             <SidebarMenu>
-              {navItems.map((n) => (
+              {navigation.map((n) => (
                 <SidebarMenuItem key={n.id}>
                   <SidebarMenuButton
                     className="sv-nav-button"
@@ -1059,28 +1064,11 @@ export default function Club() {
             className="sv-top-profile"
             onClick={() => (profile ? go("profile") : setModal("auth"))}
           >
-            {profile?.name ?? "Приєднатися"}
+            <span className="sv-top-profile-name">{profile?.name ?? "Приєднатися"}</span>
             <MemberAvatar profile={profile} />
           </button>
         </div>
         <main className="sv-content">
-          <nav className="sv-feature-nav" aria-label="Можливості клубу">
-            {[
-              { id: "discover", label: "Подруги" },
-              { id: "calendar", label: "Календар" },
-              { id: "benefits", label: "Привілеї" },
-              { id: "stories", label: "Люди та історії" },
-              ...(admin ? [{ id: "moderation", label: "Модерація" }] : []),
-            ].map((n) => (
-              <button
-                key={n.id}
-                aria-current={section === n.id ? "page" : undefined}
-                onClick={() => go(n.id as Section)}
-              >
-                {n.label}
-              </button>
-            ))}
-          </nav>
           {section === "discover" && (
             <People
               refreshKey={revision}
@@ -1128,17 +1116,13 @@ export default function Club() {
             <>
               <div className="sv-page-heading">
                 <div>
-                  <p className="sv-overline">
-                    ЖІНОЧИЙ КЛУБ · ЗНАЙОМСТВА ТА ПІДТРИМКА
-                  </p>
                   <h1>
                     {profile
                       ? `${profile.name}, рада бачити.`
                       : "Тут починається твоє коло."}
                   </h1>
                   <p>
-                    Знайомся з жінками у своєму місті. Домовляйся про зустрічі,
-                    знаходь подруг і підтримку.
+                    Подруги та зустрічі у твоєму місті.
                   </p>
                 </div>
                 <button className="sv-btn" onClick={() => startCreate("event")}>
@@ -1658,20 +1642,33 @@ export default function Club() {
         {[
           { id: "feed", label: "Стрічка", icon: House },
           { id: "event", label: "Події", icon: CalendarDays },
-          { id: "circle", label: "Спільнота", icon: Users },
+          { id: "menu", label: "Меню", icon: Menu },
           { id: "beauty", label: "Б’юті", icon: Sparkles },
           { id: "profile", label: "Профіль", icon: UserRound },
         ].map((n) => (
           <button
             key={n.id}
-            className={section === n.id ? "active" : ""}
-            onClick={() => go(n.id as Section)}
+            className={section === n.id || (n.id === "menu" && !["feed", "event", "beauty", "profile"].includes(section)) ? "active" : ""}
+            aria-expanded={n.id === "menu" ? mobileMenuOpen : undefined}
+            aria-haspopup={n.id === "menu" ? "dialog" : undefined}
+            onClick={() => n.id === "menu" ? setMobileMenuOpen(true) : go(n.id as Section)}
           >
             <n.icon size={21} />
             <span>{n.label}</span>
           </button>
         ))}
       </nav>
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="left" className="sv-mobile-menu">
+          <SheetHeader>
+            <SheetTitle>Меню клубу</SheetTitle>
+            <SheetDescription>Усі розділи СВОЯ</SheetDescription>
+          </SheetHeader>
+          <nav aria-label="Усі розділи клубу">
+            {navigation.map(n => <button key={n.id} aria-current={section === n.id ? "page" : undefined} onClick={() => go(n.id)}><n.icon size={19} /><span>{n.label}</span></button>)}
+          </nav>
+        </SheetContent>
+      </Sheet>
       <Dialog
         open={!!detail}
         onOpenChange={(v) => {
