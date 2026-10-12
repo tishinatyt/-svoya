@@ -1109,52 +1109,6 @@ export default function Club() {
                   Створити
                 </button>
               </div>
-              <section className="sv-welcome">
-                <img
-                  src={siteUrl("/svoya-coffee-v2.png")}
-                  alt="Жінки розмовляють у кав’ярні"
-                />
-                <div>
-                  <span className="sv-overline">МОЖНА ПРИЙТИ САМІЙ</span>
-                  <h2>
-                    Почнемо з <em>«привіт»?</em>
-                  </h2>
-                </div>
-                <button className="sv-outline" onClick={() => go("event")}>
-                  Обрати зустріч
-                </button>
-              </section>
-              <div className="sv-plan-shortcuts">
-                <button onClick={() => startCreate("event", "coffee")}>
-                  <span>01 / МАЛЕНЬКЕ КОЛО</span>
-                  <strong>Кава на чотирьох</strong>
-                  <small>4–6 жінок, одна розмова, нові знайомства ↗</small>
-                </button>
-                <button onClick={() => startCreate("event", "quick")}>
-                  <span>02 / СПОНТАННИЙ ПЛАН</span>
-                  <strong>Маю годину сьогодні</strong>
-                  <small>Кава або прогулянка в найближчі 24 години ↗</small>
-                </button>
-              </div>
-              <div className="sv-shortcuts">
-                {navItems.slice(1, 6).map((n) => (
-                  <button key={n.id} onClick={() => go(n.id)}>
-                    <n.icon size={22} />
-                    <span>{n.label}</span>
-                    <small>
-                      {n.id === "event"
-                        ? "Плани для себе"
-                        : n.id === "circle"
-                          ? "Люди за інтересами"
-                          : n.id === "beauty"
-                            ? "Турбота про себе"
-                            : n.id === "business"
-                              ? "Зростаємо разом"
-                              : "Підтримка поруч"}
-                    </small>
-                  </button>
-                ))}
-              </div>
             </>
           ) : section !== "profile" && isCatalogue ? (
             <div className="sv-page-heading">
