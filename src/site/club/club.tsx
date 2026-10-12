@@ -823,7 +823,6 @@ export default function Club() {
           : e.category === filter)),
   );
   const real = currentEntries.filter((e) => !e.is_demo);
-  const demos = currentEntries.filter((e) => e.is_demo);
   const mine = members.filter((m) => m.user_id === user?.id);
   const ownEntries = entries.filter((e) => e.owner_id === user?.id);
   const incomingRequests = requests.filter(
@@ -1278,18 +1277,18 @@ export default function Club() {
                       </button>
                     </div>
                   )}
-                  {demos.length > 0 && (
-                    <>
-                      <div className="sv-example-heading">
+                  {section === "feed" && !query && filter === "Усі" && (
+                    <section className="sv-start-guide" aria-label="Як почати у клубі">
+                      <Flower2 size={24} aria-hidden="true" />
+                      <div>
                         <h2>З чого можна почати</h2>
-                        <span>Приклади форматів — запис ще не відкрито</span>
+                        <p>Обери зустріч у розділі «Події» та подай заявку. Після підтвердження обговорюй деталі в чаті. Не знайшла свого формату? Запропонуй каву, прогулянку чи спільне заняття.</p>
                       </div>
-                      <div className="sv-grid">
-                        {demos.map((e) => (
-                          <Card key={e.id} entry={e} />
-                        ))}
+                      <div className="sv-start-guide-actions">
+                        <button className="sv-small-button" onClick={() => go("event")}>Знайти зустріч</button>
+                        <button className="sv-small-button" onClick={() => startCreate("event")}>Створити свою</button>
                       </div>
-                    </>
+                    </section>
                   )}
                   {catalogue.more && <button className="sv-outline" disabled={catalogue.loading} onClick={catalogue.next}>{catalogue.loading ? "Завантажуємо…" : "Показати більше"}</button>}
                   {!currentEntries.length && !error && !catalogue.error && (

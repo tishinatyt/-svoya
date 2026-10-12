@@ -19,11 +19,11 @@ export function useCatalogue(section: string, city: string, search: string, filt
     const from = append ? cursor.current : 0;
     try {
       const now = new Date().toISOString();
-      let q = clubDb().from('svoya_entries').select('*').eq('status', 'published')
+      let q = clubDb().from('svoya_entries').select('*').eq('status', 'published').eq('is_demo', false)
         .or(`expires_at.is.null,expires_at.gt.${now}`)
-        .or(`kind.neq.event,is_demo.eq.true,starts_at.is.null,starts_at.gt.${now}`);
+        .or(`kind.neq.event,starts_at.is.null,starts_at.gt.${now}`);
       if (city !== 'Усі міста') q = q.eq('city', city);
-      if (section === 'calendar') q = q.eq('kind', 'event').eq('is_demo', false).gt('starts_at', now);
+      if (section === 'calendar') q = q.eq('kind', 'event').gt('starts_at', now);
       else if (section !== 'feed') q = q.eq('kind', section);
       if (section !== 'calendar' && filter !== 'Усі') {
         if (section === 'feed') {

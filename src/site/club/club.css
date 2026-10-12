@@ -57,3 +57,10 @@
 .sv-chat-gate{padding:26px 16px;text-align:center;background:#f8eff3;border-radius:12px;margin-top:16px;color:#795366}
 .sv-chat-gate>svg{margin:0 auto 12px}.sv-chat-gate h3{font-size:20px;font-weight:600}.sv-chat-gate p{font-size:15px;line-height:1.6;margin:12px auto 20px;max-width:420px}
 .sv-entry-people-list{display:grid;gap:10px;padding:15px 0}.sv-entry-people-list>.sv-person-link{padding:10px;border:1px solid #e6d6de;border-radius:10px}.sv-dialog [data-slot=tabs-list]{max-width:100%;overflow-x:auto;justify-content:flex-start}.sv-dialog [data-slot=tabs-trigger]{flex-shrink:0}
+
+/* One short introduction replaces the grid of sample publications. */
+.sv-start-guide{display:flex;align-items:center;gap:16px;margin-top:24px;padding:20px 22px;border:1px solid #e4d8de;border-radius:14px;background:#f4ecef;color:#77465b}
+.sv-start-guide>div:first-of-type{flex:1;min-width:0}.sv-start-guide h2{margin:0 0 7px;font:600 20px/1.3 Arial,sans-serif;letter-spacing:-.02em;color:#4b303c}.sv-start-guide p{margin:0;max-width:760px;font-size:14px;line-height:1.6;color:#7c6571}
+.sv-start-guide-actions{display:flex;flex-wrap:wrap;gap:8px;max-width:290px}.sv-start-guide-actions .sv-small-button{min-height:40px;white-space:nowrap}
+@media(max-width:1100px){.sv-start-guide{flex-wrap:wrap;align-items:flex-start}.sv-start-guide-actions{max-width:none;margin-left:40px}}
+@media(max-width:620px){.sv-start-guide{padding:17px;gap:12px}.sv-start-guide h2{font-size:19px}.sv-start-guide-actions{margin-left:36px}}
