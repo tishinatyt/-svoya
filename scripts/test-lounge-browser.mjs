@@ -39,6 +39,8 @@ try {
   await page.getByText('Марія (тест)',{exact:true}).waitFor();
   assert.equal(await page.locator('.sv-lounge-message').count(),2);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  const composerBottom=await page.locator('.sv-lounge-compose').evaluate(el=>el.getBoundingClientRect().bottom);
+  assert.ok(composerBottom<=height-(name==='mobile'?60:0), 'Message composer must be visible above navigation');
   await page.screenshot({path:root+'test-results/lounge/terevenky-'+name+'.png',fullPage:true});
   await page.locator('#sv-lounge-draft').fill('Перевірка чату');
   await page.getByRole('button',{name:'Надіслати повідомлення'}).click();
@@ -47,6 +49,7 @@ try {
   if(name==='mobile') {
     await page.getByRole('button',{name:'Меню',exact:true}).click();
     await page.getByRole('button',{name:'Теревеньки',exact:true}).last().click();
+    await page.locator('.sv-mobile-menu').waitFor({state:'hidden'});
     await page.getByText('Марія (тест)',{exact:true}).waitFor();
   }
   await page.screenshot({path:root+'test-results/lounge/terevenky-'+name+'.png',fullPage:true});

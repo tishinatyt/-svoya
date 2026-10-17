@@ -1,10 +1,10 @@
 .sv-lounge{max-width:1000px;margin:0 auto}
-.sv-lounge-heading{align-items:center}
+.sv-lounge-heading{align-items:center;padding:0}
 .sv-lounge-label{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;color:#805768;font-size:12px}
-.sv-lounge-panel{position:relative;overflow:hidden;background:#fffafc;border:1px solid #e5d6df;border-radius:16px;box-shadow:0 8px 30px #552b4110}
+.sv-lounge-panel{position:relative;display:flex;flex-direction:column;height:calc(100dvh - 190px);min-height:360px;max-height:820px;overflow:hidden;background:#fffafc;border:1px solid #e5d6df;border-radius:16px;box-shadow:0 8px 30px #552b4110}
 .sv-lounge-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 22px;border-bottom:1px solid #e9dfe4;color:#573b46;font-size:14px;font-weight:600}
 .sv-lounge-bar small{font-size:11px;color:#826773;font-weight:400}
-.sv-lounge-messages{height:clamp(260px,calc(100dvh - 320px),660px);overflow-y:auto;overscroll-behavior:contain;padding:20px 22px;scrollbar-width:thin;scrollbar-color:#d3b7c5 transparent;background:linear-gradient(140deg,#f9f3f6,#fcfaf7)}
+.sv-lounge-messages{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:20px 22px;scrollbar-width:thin;scrollbar-color:#d3b7c5 transparent;background:linear-gradient(140deg,#f9f3f6,#fcfaf7)}
 .sv-lounge-date{display:flex;align-items:center;justify-content:center;gap:16px;color:#886a78;font-size:11px;margin:18px 0 22px}
 .sv-lounge-date:before,.sv-lounge-date:after{content:"";width:45px;height:1px;background:#e3d5dc}
 .sv-lounge-message{display:flex;align-items:flex-end;gap:10px;margin:0 0 14px}
@@ -49,7 +49,8 @@
   .sv-lounge-label svg{width:13px}
   .sv-lounge-bar{padding:12px 14px;font-size:12px;flex-wrap:wrap;gap:4px}
   .sv-lounge-bar small{font-size:10px}
-  .sv-lounge-messages{padding:14px 10px;height:clamp(230px,calc(100dvh - 340px),600px)}
+  .sv-lounge-panel{height:calc(100dvh - 260px);max-height:none}
+  .sv-lounge-messages{padding:14px 10px}
   .sv-lounge-message{gap:7px}
   .sv-lounge-avatar .sv-avatar{width:27px;height:27px}
   .sv-lounge-bubble{max-width:85%;padding:10px 12px}
