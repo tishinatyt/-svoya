@@ -109,6 +109,8 @@ import Moderation from "./features/moderation";
 import { MemberTitleBadge, MemberTitleGuide } from './features/member-titles';
 import { EntryExtras, GreeterSelect } from "./features/entry-extras";
 import { EntryPeopleBar, useEntryPeople } from "./features/entry-people";
+import Lounge from "./features/lounge";
+import "./features/lounge.css";
 import { action, publicPhoto, messageFor } from "./features/shared";
 import "./features/features.css";
 type Section =
@@ -119,9 +121,11 @@ type Section =
   | "calendar"
   | "benefits"
   | "stories"
+  | "lounge"
   | "moderation";
 const navItems = [
   { id: "feed", label: "Стрічка", icon: House },
+  { id: "lounge", label: "Теревеньки", icon: MessageCircle },
   { id: "event", label: "Події", icon: CalendarDays },
   { id: "circle", label: "Свої кола", icon: Users },
   { id: "beauty", label: "Б’юті", icon: Sparkles },
@@ -406,6 +410,7 @@ export default function Club() {
         "calendar",
         "benefits",
         "stories",
+        "lounge",
         "moderation",
       ].includes(tab ?? "")
     )
@@ -1069,6 +1074,7 @@ export default function Club() {
           </button>
         </div>
         <main className="sv-content">
+          {section === "lounge" && <Lounge profile={profile} loading={loading} admin={admin} onLogin={editProfile} onProfile={() => go("profile")} onPerson={showMember} />}
           {section === "discover" && (
             <People
               refreshKey={revision}

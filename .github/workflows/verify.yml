@@ -10,6 +10,26 @@ concurrency:
   group: svoya-verify-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  lounge-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:lounge:browser
+      - name: Keep lounge desktop and mobile previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: svoya-lounge-preview
+          path: test-results/lounge/
+          retention-days: 7
+          if-no-files-found: ignore
   checks:
     runs-on: ubuntu-latest
     timeout-minutes: 15
