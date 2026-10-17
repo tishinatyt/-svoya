@@ -33,7 +33,7 @@ test('moderator awards a title with history; member sees it without moderation r
   await dialog.getByRole('button',{name:'Увійти',exact:true}).click();
   await expect(dialog.getByLabel('Ім’я',{exact:true})).toHaveValue(moderator.name);
   await closeDialog(page);
-  await page.getByRole('button',{name:'Модерація',exact:true}).click();
+  await openClubSection(page, 'Модерація');
   await page.getByRole('button',{name:'Титули',exact:true}).click();
   await page.getByLabel('Знайти анкету').fill(member.name);
   const card=page.locator('.sv-feature-box').filter({has:page.getByRole('heading',{name:`${member.name} · Титульне місто`,exact:true})});
@@ -55,7 +55,10 @@ test('moderator awards a title with history; member sees it without moderation r
   await closeDialog(page);
   await page.goto(`${club}?section=profile`);
   await expect(page.getByLabel('Титул: Графиня',{exact:true})).toBeVisible();
+  const mobileMenu = page.getByRole('button', { name: 'Меню', exact: true });
+  if (await mobileMenu.isVisible()) await mobileMenu.click();
   await expect(page.getByRole('button',{name:'Модерація',exact:true})).toHaveCount(0);
+  if (await page.locator('.sv-mobile-menu').isVisible()) await closeDialog(page);
   await page.getByText('Титули та як їх отримати',{exact:true}).click();
   await expect(page.locator('.sv-title-path .is-current')).toContainText('Графиня');
   await fitsViewport(page);await capture(page,info,'member-title-profile');
@@ -88,6 +91,14 @@ async function openLogin(page) {
 async function closeDialog(page) {
   await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
+}
+async function openClubSection(page, name) {
+  const menu = page.getByRole('button', { name: 'Меню', exact: true });
+  if (await menu.isVisible()) {
+    await menu.click();
+    await page.getByRole('navigation', { name: 'Усі розділи клубу' }).getByRole('button', { name, exact: true }).click();
+    await expect(page.locator('.sv-mobile-menu')).toHaveCount(0);
+  } else await page.getByRole('button', { name, exact: true }).click();
 }
 async function logout(page) {
   await page.goto(`${club}?section=profile`);
@@ -125,7 +136,7 @@ test('landing, club sections, guest access and dialog fit the viewport', async (
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Тут починається твоє коло.');
   await fitsViewport(page);
   await capture(page, info, 'club');
-  for (const section of ['event', 'circle', 'beauty', 'business', 'help', 'calendar', 'benefits', 'stories', 'discover', 'profile']) {
+  for (const section of ['event', 'circle', 'beauty', 'business', 'help', 'calendar', 'benefits', 'stories', 'discover', 'lounge', 'profile']) {
     await page.goto(`${club}?section=${section}`);
     await page.waitForLoadState('networkidle');
     await expect(page.locator('.sv-content')).toBeVisible();
