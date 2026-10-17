@@ -1,12 +1,13 @@
-import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './site/page'
 import { clubConfig } from './lib/club-db'
+import { siteUrl } from './lib/site-path'
+import SiteMetadata from './site/metadata'
 
 const Club = lazy(() => import('./site/club/club'))
 
 function ClubPage() {
-  useEffect(() => { document.title = 'СВОЯ — платформа жіночого клубу' }, [])
   try { clubConfig() } catch {
     return <main style={{ maxWidth: 600, margin: '80px auto', padding: 24 }}>
       <h1>Клуб тимчасово недоступний</h1>
@@ -20,10 +21,15 @@ function ClubPage() {
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || '/'}>
+      <SiteMetadata />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/club" element={<ClubPage />} />
-        <Route path="*" element={<Navigate to="/club" replace />} />
+        <Route path="*" element={<main style={{ maxWidth: 600, margin: '80px auto', padding: 24 }}>
+          <h1>Сторінку не знайдено</h1>
+          <p>Можливо, посилання змінилося. Повернися на головну або відкрий клуб.</p>
+          <a href={siteUrl('/')}>На головну</a>{' · '}<a href={siteUrl('/club')}>До клубу</a>
+        </main>} />
       </Routes>
     </BrowserRouter>
   )

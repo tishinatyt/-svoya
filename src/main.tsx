@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import './site/globals.css'
 import App from './App'
 import { siteUrl } from './lib/site-path'
@@ -15,4 +15,9 @@ if ('serviceWorker' in navigator) {
   }, { once: true })
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>)
+const root = document.getElementById('root')!
+const app = <StrictMode><App /></StrictMode>
+// A legacy deep link may restore a club URL before React starts.
+const isHome = location.pathname.replace(/\/$/, '') === import.meta.env.BASE_URL.replace(/\/$/, '')
+if (root.dataset.prerendered === 'home' && isHome) hydrateRoot(root, app)
+else createRoot(root).render(app)

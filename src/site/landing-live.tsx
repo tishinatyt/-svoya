@@ -61,7 +61,7 @@ export default function LandingLive() {
           </a>
         </div>
         {loading ? (
-          <p role="status">Завантажуємо найближчі зустрічі…</p>
+          <p role="status">Актуальні зустрічі та дати — у календарі клубу.</p>
         ) : error ? (
           <p>
             Афіша тимчасово не завантажилась.{" "}

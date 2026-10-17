@@ -22,12 +22,20 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:lounge:browser
+      - name: Verify prerendered SEO and hydration on desktop and mobile
+        run: npm run test:seo:browser
+        env:
+          VITE_SVOYA_ENV: test
+          VITE_SUPABASE_URL: http://127.0.0.1:55421
+          VITE_SUPABASE_ANON_KEY: local-fixture-public-key
       - name: Keep lounge desktop and mobile previews
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: svoya-lounge-preview
-          path: test-results/lounge/
+          path: |
+            test-results/lounge/
+            test-results/seo/
           retention-days: 7
           if-no-files-found: ignore
   checks:

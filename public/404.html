@@ -1,20 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
-  <head>
-    <meta charset="utf-8" />
-    <title>СВОЯ</title>
-    <script>
-      (function () {
-        var l = window.location;
-        var marker = '/-svoya/';
-        var index = l.pathname.indexOf(marker);
-        var base = index >= 0 ? l.pathname.slice(0, index + marker.length) : '/-svoya/';
-        try {
-          sessionStorage.setItem('svoya:redirect', l.pathname + l.search + l.hash);
-        } catch (_) {}
-        l.replace(l.protocol + '//' + l.host + base);
-      })();
-    </script>
-  </head>
-  <body></body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- svoya:404:seo -->
+  <style>
+    body{margin:0;background:#fbf8f2;color:#552338;font:17px/1.7 Arial,sans-serif}
+    main{max-width:620px;margin:12vh auto;padding:32px}h1{font:44px/1.15 Georgia,serif}
+    .brand{letter-spacing:.14em;font-size:14px}a{color:inherit;text-underline-offset:5px;margin-right:24px}
+    a:focus-visible{outline:3px solid #aa6a84;outline-offset:5px}
+  </style>
+</head>
+<body><main>
+  <p class="brand">СВОЯ · ЖІНОЧИЙ КЛУБ</p>
+  <h1>Сторінку не знайдено</h1>
+  <p>Можливо, посилання змінилося. Повернися на головну або відкрий клуб.</p>
+  <a href="__SVOYA_BASE__">На головну</a><a href="__SVOYA_BASE__club/">До клубу</a>
+</main></body>
 </html>

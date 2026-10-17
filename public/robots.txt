@@ -1,3 +1,6 @@
+# GitHub Pages project copy. Crawlers use /robots.txt at the HOST root,
+# not /-svoya/robots.txt. Page-level indexing rules are in HTML meta tags.
+# Submit the sitemap below directly in Google Search Console.
 User-agent: *
 Allow: /
 
