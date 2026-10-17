@@ -103,7 +103,11 @@ export default function Home() {
           </div>
           <div className="home-hero-photo">
             <img
-              src={siteUrl("/svoya-coffee-v2.png")}
+              src={siteUrl("/svoya-coffee-1536.webp")}
+              srcSet={`${siteUrl('/svoya-coffee-960.webp')} 960w, ${siteUrl('/svoya-coffee-1536.webp')} 1536w`}
+              sizes="(max-width: 700px) 100vw, 48vw"
+              width={1536}
+              height={1024}
               alt="Жінки знайомляться й розмовляють за кавою"
               fetchPriority="high"
             />
@@ -292,7 +296,7 @@ export default function Home() {
             <article>
               <span>01</span>
               <h3>Покажи себе</h3>
-              <p>Підтвердь email, додай фото, місто та кілька слів про те, що любиш.</p>
+              <p>Обери логін і пароль, додай фото, місто та кілька слів про те, що любиш.</p>
             </article>
             <article>
               <span>02</span>
