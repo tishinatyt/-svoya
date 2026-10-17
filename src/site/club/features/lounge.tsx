@@ -53,7 +53,7 @@ function Conversation({ profile, admin, onPerson }: Pick<Props, 'admin' | 'onPer
   const scroll = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const nearBottom = useRef(true);
-  const lastMessage = useRef<string | undefined>(undefined);
+  const seenMessages = useRef(new Set<string>());
   const jumpToBottom = useCallback(() => {
     const el = scroll.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -87,7 +87,7 @@ function Conversation({ profile, admin, onPerson }: Pick<Props, 'admin' | 'onPer
           setReadError('');
         }
       } catch {
-        if (active) {
+        if (active && version === mutation.current) {
           // Do not keep a private conversation visible after an access/network error.
           setRows([]);
           setAuthors({});
@@ -114,16 +114,15 @@ function Conversation({ profile, admin, onPerson }: Pick<Props, 'admin' | 'onPer
   }, [db, retry]);
 
   useLayoutEffect(() => {
-    const latest = rows.at(-1)?.id;
     if (nearBottom.current) jumpToBottom();
-    else if (latest && latest !== lastMessage.current) setNewMessages(true);
-    lastMessage.current = latest;
+    else if (rows.some(m => !seenMessages.current.has(m.id))) setNewMessages(true);
+    seenMessages.current = new Set(rows.map(m => m.id));
   }, [rows, jumpToBottom]);
 
   async function send(event: FormEvent) {
     event.preventDefault();
     const body = draft.trim();
-    if (!body || body.length > 2000 || sendLock.current) return;
+    if (!body || body.length > 2000 || sendLock.current || loading || readError) return;
     sendLock.current = true;
     setSending(true);
     setActionError('');

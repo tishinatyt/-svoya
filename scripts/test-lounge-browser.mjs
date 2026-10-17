@@ -39,9 +39,10 @@ try {
   await page.getByText('Марія (тест)',{exact:true}).waitFor();
   assert.equal(await page.locator('.sv-lounge-message').count(),2);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await page.screenshot({path:root+'test-results/lounge/terevenky-'+name+'.png',fullPage:true});
   await page.locator('#sv-lounge-draft').fill('Перевірка чату');
   await page.getByRole('button',{name:'Надіслати повідомлення'}).click();
-  await page.getByText('Перевірка чату',{exact:true}).waitFor();
+  await page.locator('.sv-lounge-bubble p').filter({hasText:'Перевірка чату'}).waitFor();
   assert.equal(sent,1);assert.equal(await page.locator('#sv-lounge-draft').inputValue(),'');
   if(name==='mobile') {
     await page.getByRole('button',{name:'Меню',exact:true}).click();
