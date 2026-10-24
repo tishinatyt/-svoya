@@ -221,7 +221,9 @@ export default function Calendar({
                 </time>
                 <div>
                   <span className="sv-overline">
-                    {e.format === "coffee"
+                    {e.format === "open"
+                      ? "БУДЬ-ХТО"
+                      : e.format === "coffee"
                       ? "КАВА НА ЧОТИРЬОХ"
                       : e.format === "quick"
                         ? "МАЮ ГОДИНУ"

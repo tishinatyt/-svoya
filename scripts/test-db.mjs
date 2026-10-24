@@ -22,7 +22,7 @@ for(const file of (await readdir(migrations)).filter(f=>f.endsWith('.sql')).sort
  sql=sql.replace(/^create extension if not exists pg_(net|cron);$/gm,'-- extension represented by isolated stub');
  await db.exec(sql);console.log('Loaded',file);
 }
-for(const file of ['supabase/tests/svoya-community-transaction.sql','supabase-svoya/tests/access-and-greeters.sql','supabase-svoya/tests/username-signup.sql','supabase-svoya/tests/member-titles.sql','supabase-svoya/tests/entry-people.sql','supabase-svoya/tests/lounge-chat.sql']) {
+for(const file of ['supabase/tests/svoya-community-transaction.sql','supabase-svoya/tests/access-and-greeters.sql','supabase-svoya/tests/username-signup.sql','supabase-svoya/tests/member-titles.sql','supabase-svoya/tests/entry-people.sql','supabase-svoya/tests/lounge-chat.sql','supabase-svoya/tests/open-events.sql']) {
  const results=await db.exec(await readFile(new URL(file,root),'utf8'));
  console.log(file, results.flatMap(r=>r.rows??[]));
 }
@@ -33,6 +33,8 @@ await db.exec(await readFile(new URL('supabase-svoya/rollback/greeter-consistenc
 assert.equal((await db.query("select count(*)::int as n from pg_trigger where tgname in ('svoya_greeter_membership','svoya_greeter_profile','svoya_greeter_block')")).rows[0].n,0);
 assert.notEqual(await definition(),upgraded);
 await db.exec(await readFile(new URL('20261009104307_svoya_greeter_consistency.sql',migrations),'utf8'));
+// Restore the later open-event upgrade after exercising the historical rollback.
+await db.exec(await readFile(new URL('20261024184755_svoya_open_events.sql',migrations),'utf8'));
 assert.equal(await definition(),upgraded);
 await db.exec(await readFile(new URL('supabase-svoya/tests/access-and-greeters.sql',root),'utf8'));
 console.log('PASS: greeter schema rollback and reapplication, then access and greeter regressions');

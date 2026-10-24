@@ -17,7 +17,7 @@ export default function PublicationForm({
 }: {
   profile: Profile;
   initialKind: Kind;
-  initialFormat?: "standard" | "coffee" | "quick";
+  initialFormat?: "standard" | "coffee" | "quick" | "open";
   onPublished: (e: Entry) => void;
 }) {
   const [kind, setKind] = useState(initialKind),
@@ -126,11 +126,14 @@ export default function PublicationForm({
             onChange={(e) => setFormat(e.target.value as typeof format)}
           >
             <option value="standard">Зустріч клубу</option>
+            <option value="open">Будь-хто · без підтвердження</option>
             <option value="coffee">Кава на чотирьох · 4–6 разом з тобою</option>
             <option value="quick">Маю годину · найближчі 24 години</option>
           </select>
           <small>
-            {format === "coffee"
+            {format === "open"
+              ? "Будь-яка учасниця клубу може одразу приєднатися й писати в чаті. Якщо місць немає — лист очікування з автоматичним приєднанням."
+              : format === "coffee"
               ? "Ти обираєш місце і час, запрошуєш 3–5 учасниць та підтверджуєш заявки."
               : format === "quick"
                 ? "Після завершення оголошення автоматично зникне з публічної стрічки."

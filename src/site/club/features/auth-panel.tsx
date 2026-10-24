@@ -17,6 +17,7 @@ export default function AuthPanel({
     recovery ? "password" : "signup",
   );
   const [notice, setNotice] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { busy, run } = useTask();
   const anonymous = !!user?.is_anonymous;
   const emailPending = anonymous && !!user?.new_email;
@@ -58,7 +59,6 @@ export default function AuthPanel({
         return;
       }
       if (usernameSignup) {
-        if (password !== String(f.get("confirmPassword") ?? "")) throw new Error('SV_PASSWORD_MISMATCH');
         await registerUsername(String(f.get("username") ?? ""),password,anonymous);
         toast.success("Акаунт створено. Збережи свій логін і пароль.");
         onComplete();
@@ -127,6 +127,7 @@ export default function AuthPanel({
                 aria-pressed={mode === m}
                 onClick={() => {
                   setMode(m);
+                  setShowPassword(false);
                   setNotice("");
                 }}
               >
@@ -140,7 +141,7 @@ export default function AuthPanel({
           </div>
         )
       )}
-      {usernameSignup && <p className="sv-notice">Тимчасово реєструємо без email. Збережи логін і пароль: відновлення через пошту для такого акаунта недоступне.</p>}
+      {usernameSignup && <p className="sv-notice">Лише логін і пароль — без листів та кодів підтвердження. Збережи їх: відновлення через пошту для цього акаунта недоступне.</p>}
       <form className="sv-form" onSubmit={submit}>
         {usernameSignup ? (
           <label>Логін
@@ -158,7 +159,7 @@ export default function AuthPanel({
             {mode === "password" ? "Новий пароль" : "Пароль"}
             <input
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               minLength={mode === "login" ? 1 : 10}
               maxLength={128}
               required
@@ -169,7 +170,11 @@ export default function AuthPanel({
             <small>{mode === "login" ? "" : "Щонайменше 10 символів."}</small>
           </label>
         )}
-        {usernameSignup && <label>Повтори пароль<input name="confirmPassword" type="password" required minLength={10} maxLength={128} autoComplete="new-password" /></label>}
+        {(!anonymous || usernameSignup) && mode !== "reset" && (
+          <button type="button" className="sv-outline" aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? "Сховати пароль" : "Показати пароль"}
+          </button>
+        )}
         <button className="sv-btn" disabled={busy}>
           {busy
             ? "Зачекай…"

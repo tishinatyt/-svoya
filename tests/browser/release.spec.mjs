@@ -221,19 +221,21 @@ test('legacy email login, logout without profile and password recovery', async (
   await expect(dialog.getByLabel('Ім’я', { exact: true })).toBeVisible();
 });
 
-test('username signup, password confirmation, duplicate protection and repeat login', async ({page}, info) => {
+test('two-field username signup, password visibility, duplicate protection and repeat login', async ({page}, info) => {
   const username=`qa_${randomUUID().replaceAll('-','').slice(0,16)}`, secret=password();
   await page.goto(club);
   await page.getByRole('button',{name:'Приєднатися',exact:true}).click();
   let dialog=page.getByRole('dialog');
-  await expect(dialog.getByText('Тимчасово реєструємо без email.',{exact:false})).toBeVisible();
+  await expect(dialog.getByText('Лише логін і пароль — без листів та кодів підтвердження.',{exact:false})).toBeVisible();
   await expect(dialog.locator('input[type="email"]')).toHaveCount(0);
   await dialog.getByLabel(/^Логін/).fill(username);
   await dialog.getByLabel(/^Пароль/).fill(secret);
-  await dialog.getByLabel('Повтори пароль',{exact:true}).fill(password());
-  await dialog.getByRole('button',{name:'Створити акаунт',exact:true}).click();
-  await expect(page.getByText('Паролі не збігаються. Перевір повторення.',{exact:true})).toBeVisible();
-  await dialog.getByLabel('Повтори пароль',{exact:true}).fill(secret);
+  await expect(dialog.getByLabel('Повтори пароль',{exact:true})).toHaveCount(0);
+  await dialog.getByRole('button',{name:'Показати пароль',exact:true}).click();
+  await expect(dialog.getByLabel(/^Пароль/)).toHaveAttribute('type','text');
+  await expect(dialog.getByLabel(/^Пароль/)).toHaveValue(secret);
+  await dialog.getByRole('button',{name:'Сховати пароль',exact:true}).click();
+  await expect(dialog.getByLabel(/^Пароль/)).toHaveAttribute('type','password');
   await capture(page,info,'username-signup');
   await dialog.getByRole('button',{name:'Створити акаунт',exact:true}).click();
   await expect(dialog.getByLabel('Ім’я',{exact:true})).toBeVisible();
@@ -252,7 +254,6 @@ test('username signup, password confirmation, duplicate protection and repeat lo
   await dialog.getByLabel(/^Логін/).fill(username.toUpperCase());
   const alternative=password();
   await dialog.getByLabel(/^Пароль/).fill(alternative);
-  await dialog.getByLabel('Повтори пароль',{exact:true}).fill(alternative);
   await dialog.getByRole('button',{name:'Створити акаунт',exact:true}).click();
   await expect(page.getByText('Цей логін уже зайнятий. Обери інший або увійди до свого акаунта.',{exact:true})).toBeVisible();
   await dialog.getByRole('button',{name:'Вхід',exact:true}).click();

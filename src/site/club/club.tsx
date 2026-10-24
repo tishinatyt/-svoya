@@ -275,7 +275,7 @@ export default function Club() {
   } | null>(null);
   const [createKind, setCreateKind] = useState<Kind>("event");
   const [createFormat, setCreateFormat] = useState<
-    "standard" | "coffee" | "quick"
+    "standard" | "coffee" | "quick" | "open"
   >("standard");
   const [needsGreeter, setNeedsGreeter] = useState(false);
   const [recovery, setRecovery] = useState(false);
@@ -515,7 +515,7 @@ export default function Club() {
   }
   function startCreate(
     kind: Kind,
-    format: "standard" | "coffee" | "quick" = "standard",
+    format: "standard" | "coffee" | "quick" | "open" = "standard",
   ) {
     if (!requireProfile()) return;
     setCreateKind(kind);
@@ -630,7 +630,9 @@ export default function Club() {
       toast.success(
         result.status === "waitlisted"
           ? "Ти у листі очікування. Повідомимо, коли звільниться місце."
-          : "Заявку надіслано організаторці.",
+          : result.status === "joined"
+            ? "Ти приєдналася до події. Чат уже доступний!"
+            : "Заявку надіслано організаторці.",
       );
       await load();
     });
@@ -870,7 +872,9 @@ export default function Club() {
           <span className="sv-art-tag">
             {e.is_demo
               ? "Приклад"
-              : e.format === "coffee"
+              : e.format === "open"
+                ? "Будь-хто"
+                : e.format === "coffee"
                 ? "Кава на чотирьох"
                 : e.format === "quick"
                   ? "Маю годину"
@@ -1272,7 +1276,7 @@ export default function Club() {
                       <Flower2 size={24} aria-hidden="true" />
                       <div>
                         <h2>З чого можна почати</h2>
-                        <p>Обери зустріч у розділі «Події» та подай заявку. Після підтвердження обговорюй деталі в чаті. Не знайшла свого формату? Запропонуй каву, прогулянку чи спільне заняття.</p>
+                        <p>Обери зустріч у розділі «Події». До формату «Будь-хто» приєднуйся одразу; для інших зустрічей подай заявку. Чат відкриється, коли ти станеш учасницею. Не знайшла свого формату? Запропонуй каву, прогулянку чи спільне заняття.</p>
                       </div>
                       <div className="sv-start-guide-actions">
                         <button className="sv-small-button" onClick={() => go("event")}>Знайти зустріч</button>
@@ -1777,7 +1781,7 @@ export default function Club() {
                         {detail.format === "coffee"
                           ? `До ${detail.capacity + 1} разом з організаторкою`
                           : `До ${detail.capacity} учасниць + організаторка`}{" "}
-                        · вступ за підтвердженням
+                        {detail.format === "open" ? "· без підтвердження" : "· вступ за підтвердженням"}
                       </p>
                     )}
                     {priceLabel(detail) && <p>{priceLabel(detail)}</p>}
@@ -1854,7 +1858,9 @@ export default function Club() {
                             : activeMembership.status === "pending"
                               ? "Організаторка розгляне заявку. Перевіряй статус у профілі."
                               : activeMembership.status === "waitlisted"
-                                ? "Коли звільниться місце, заявка перейде на підтвердження організаторці. Ми повідомимо тебе."
+                                ? detail.format === "open"
+                                  ? "Коли звільниться місце, ти автоматично приєднаєшся й отримаєш доступ до чату. Ми повідомимо тебе."
+                                  : "Коли звільниться місце, заявка перейде на підтвердження організаторці. Ми повідомимо тебе."
                                 : "Можна обрати іншу зустріч або скасувати цю заявку."}
                         </p>
                         <button
@@ -1895,7 +1901,7 @@ export default function Club() {
                               : (counts[detail.id]?.joined ?? 0) >=
                                   detail.capacity
                                 ? "Стати у лист очікування"
-                                : "Хочу на зустріч"}
+                                : detail.format === "open" ? "Приєднатися" : "Хочу на зустріч"}
                         </button>
                       </div>
                     )
@@ -2004,7 +2010,7 @@ export default function Club() {
                       <div className="sv-chat-gate">
                         <MessageCircle size={28} />
                         <h3>Обговорення зустрічі</h3>
-                        <p>{!user ? "Увійди в клуб і приєднайся до зустрічі, щоб спілкуватися з учасницями." : profile?.membership_status !== "approved" ? "Чат стане доступним після схвалення анкети клубом і підтвердження участі організаторкою." : activeMembership?.status === "pending" ? "Твою заявку розглядає організаторка. Після підтвердження тут відкриється чат." : activeMembership?.status === "waitlisted" ? "Ти у листі очікування. Чат відкриється після підтвердження участі." : "Чат доступний організаторці та підтвердженим учасницям. Подай заявку на зустріч у вкладці з деталями."}</p>
+                        <p>{!user ? "Увійди в клуб і приєднайся до зустрічі, щоб спілкуватися з учасницями." : profile?.membership_status !== "approved" ? "Чат стане доступним після схвалення анкети клубом і приєднання до події." : activeMembership?.status === "pending" ? "Твою заявку розглядає організаторка. Після підтвердження тут відкриється чат." : activeMembership?.status === "waitlisted" ? "Ти у листі очікування. Чат відкриється, коли ти станеш учасницею події." : detail.format === "open" ? "Приєднайся до події у вкладці з деталями — і чат відкриється одразу, якщо є місця." : "Чат доступний організаторці та підтвердженим учасницям. Подай заявку на зустріч у вкладці з деталями."}</p>
                         <button className="sv-btn" onClick={() => !user ? setModal("auth") : changeDetailTab("about")}>{!user ? "Увійти в клуб" : "До деталей зустрічі"}</button>
                       </div>
                     ) : <>

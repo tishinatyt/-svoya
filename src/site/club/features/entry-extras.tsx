@@ -16,6 +16,9 @@ export function EntryExtras({
   if (entry.is_demo) return null;
   return (
     <div className="sv-entry-extras">
+      {entry.format === "open" && (
+        <p className="sv-notice">Будь-хто з учасниць клубу може приєднатися без підтвердження організаторки. Чат відкривається одразу. Якщо місць немає — ставай у лист очікування.</p>
+      )}
       {entry.format === "coffee" && (
         <p className="sv-notice">
           Кава на чотирьох · до {entry.capacity + 1} жінок разом з

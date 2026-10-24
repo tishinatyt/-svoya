@@ -14,7 +14,7 @@ export type Entry = {
   is_demo: boolean;
   status: string;
   created_at: string;
-  format?: "standard" | "coffee" | "quick";
+  format?: "standard" | "coffee" | "quick" | "open";
   ends_at?: string | null;
   expires_at?: string | null;
   district?: string;
